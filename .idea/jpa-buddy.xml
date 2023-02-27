@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpaBuddyIdeaProjectConfig">
+    <option name="defaultUnitInitialized" value="true" />
+    <option name="renamerInitialized" value="true" />
+    <option name="reverseEngineeringLastDbConnectionId" value="0ac10720-60c8-4cea-99ef-b02ed0c3f42f" />
+    <option name="reLastEntityCreationPackage" value="src/main/java/com/carboexco/moduloProyectos/entity" />
+    <option name="reIgnoreSlowDbConnections">
+      <ignoreDs id="0ac10720-60c8-4cea-99ef-b02ed0c3f42f" />
+    </option>
+  </component>
+</project>
