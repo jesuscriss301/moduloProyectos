@@ -13,10 +13,11 @@ import java.time.LocalDate;
 @Data
 @Table(name = "tarea")
 public class Tarea {
-    @EmbeddedId
-    private TareaId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tarea", nullable = false)
+    private Integer id;
 
-    @MapsId("idEtapaProyecto")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_etapa_proyecto", nullable = false)
     private EtapaProyecto idEtapaProyecto;
@@ -39,6 +40,5 @@ public class Tarea {
 
     @Column(name = "fecha_final_real")
     private LocalDate fechaFinalReal;
-
 
 }
