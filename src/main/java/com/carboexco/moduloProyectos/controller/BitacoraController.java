@@ -22,7 +22,7 @@ public class BitacoraController {
     }
 
     @GetMapping("/tarea/{id}")
-    public List<Bitacora> getBitacoraAll(@PathVariable int id) {
+    public List<Bitacora> getTareaById(@PathVariable int id) {
         List<Bitacora> bitacora = bitacoraRepository.findAll();
         List<Bitacora> bitacoratarea = new ArrayList<Bitacora>();
         for (Bitacora i : bitacora) {
