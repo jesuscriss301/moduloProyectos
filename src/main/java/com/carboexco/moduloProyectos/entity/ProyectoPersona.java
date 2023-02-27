@@ -1,10 +1,16 @@
 package com.carboexco.moduloProyectos.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
+@Getter
+@Setter
+@Data
 @Table(name = "proyecto_persona")
 public class ProyectoPersona {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -20,37 +26,5 @@ public class ProyectoPersona {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_etapa", nullable = false)
     private Etapa idEtapa;
-
-    public Proyecto getIdProyecto() {
-        return idProyecto;
-    }
-
-    public void setIdProyecto(Proyecto idProyecto) {
-        this.idProyecto = idProyecto;
-    }
-
-    public Integer getIdPersona() {
-        return idPersona;
-    }
-
-    public void setIdPersona(Integer idPersona) {
-        this.idPersona = idPersona;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    public Etapa getIdEtapa() {
-        return idEtapa;
-    }
-
-    public void setIdEtapa(Etapa idEtapa) {
-        this.idEtapa = idEtapa;
-    }
 
 }
