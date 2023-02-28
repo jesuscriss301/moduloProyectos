@@ -61,7 +61,6 @@ public class BitacoraController {
 
             bitacoraReturn.setDescripcionBitacora(bitacora.getDescripcionBitacora());
             bitacoraReturn.setObservacionBitacora(bitacora.getObservacionBitacora());
-            bitacoraReturn.setDescripcionBitacora(bitacora.getDescripcionBitacora());
             bitacoraReturn.setFechaHora(bitacora.getFechaHora());
             bitacoraReturn.setFileFoto(bitacora.getFileFoto());
 
