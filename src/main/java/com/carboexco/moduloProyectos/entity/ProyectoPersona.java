@@ -13,6 +13,11 @@ import java.time.LocalDate;
 @Data
 @Table(name = "proyecto_persona")
 public class ProyectoPersona {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto idProyecto;
