@@ -13,6 +13,7 @@ com\carboexco\moduloProyectos\repository\EstadoRepository.class
 com\carboexco\moduloProyectos\controller\PrioridadController.class
 com\carboexco\moduloProyectos\controller\TareaController.class
 com\carboexco\moduloProyectos\entity\Estado.class
+com\carboexco\moduloProyectos\SwaggerConfig.class
 com\carboexco\moduloProyectos\controller\EtapaController.class
 com\carboexco\moduloProyectos\controller\EtapaProyectoController.class
 com\carboexco\moduloProyectos\repository\DisenoRepository.class
@@ -24,6 +25,7 @@ com\carboexco\moduloProyectos\entity\Bitacora.class
 com\carboexco\moduloProyectos\repository\EtapaProyectoRepository.class
 com\carboexco\moduloProyectos\entity\Tipoproyecto.class
 com\carboexco\moduloProyectos\entity\PresupuestoPersonalId.class
+com\carboexco\moduloProyectos\CorsConfiguration.class
 com\carboexco\moduloProyectos\entity\PresupuestoMaterialId.class
 com\carboexco\moduloProyectos\entity\Material.class
 com\carboexco\moduloProyectos\entity\Etapa.class
