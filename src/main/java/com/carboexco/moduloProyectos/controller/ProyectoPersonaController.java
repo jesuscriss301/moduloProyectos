@@ -36,7 +36,7 @@ public class ProyectoPersonaController {
     @GetMapping("/{id}")
     public ProyectoPersona getProyectoPersonabyId(@PathVariable int id) {
 
-        Optional<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findById(id);
+        Optional<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findById((long)id);
 
         if (proyectoPersona.isPresent()) {
             return proyectoPersona.get();
@@ -54,7 +54,7 @@ public class ProyectoPersonaController {
     @PutMapping("/{id}")
     public ProyectoPersona putProyectoPersonabyId(@PathVariable int id, @RequestBody ProyectoPersona proyectoPersona) {
 
-        Optional<ProyectoPersona> proyectoPersonaCurrent = proyectoPersonaRepository.findById(id);
+        Optional<ProyectoPersona> proyectoPersonaCurrent = proyectoPersonaRepository.findById((long)id);
 
         if (proyectoPersonaCurrent.isPresent()) {
             ProyectoPersona proyectoPersonaReturn = proyectoPersonaCurrent.get();
@@ -73,11 +73,11 @@ public class ProyectoPersonaController {
     @DeleteMapping("/{id}")
     public ProyectoPersona deleteProyectoPersonabyId(@PathVariable int id) {
 
-        Optional<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findById(id);
+        Optional<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findById((long)id);
 
         if (proyectoPersona.isPresent()) {
             ProyectoPersona proyectoPersonaReturn = proyectoPersona.get();
-            proyectoPersonaRepository.deleteById(id);
+            proyectoPersonaRepository.deleteById((long)id);
             return proyectoPersonaReturn;
         }
 
