@@ -2,7 +2,13 @@
 <project version="4">
   <component name="JpbDataSourceConfig">
     <data-sources>
-      <data-source id="0ac10720-60c8-4cea-99ef-b02ed0c3f42f" name="modulo_proyectos" url="jdbc:mysql://localhost/modulo_proyectos?useSSL=false&amp;allowMultiQueries=true&amp;serverTimezone=UTC" driverClass="com.mysql.cj.jdbc.Driver" />
+      <data-source id="24716eca-2532-4982-a430-d42235964949" name="demo-proyectos-Backend" url="jdbc:mysql://localhost/proyetos?useSSL=false&amp;allowMultiQueries=true&amp;serverTimezone=UTC" driverClass="com.mysql.cj.jdbc.Driver" />
+      <data-source id="a0de98f3-273c-40e4-b356-cf42cfc38f75" name="demo-proyectos" url="jdbc:mysql://localhost/proyectos?useSSL=false&amp;allowMultiQueries=true&amp;serverTimezone=UTC" driverClass="com.mysql.cj.jdbc.Driver" />
+      <data-source id="0176c2a6-6496-4fef-a2f1-f677fa8cdc57" name="demo" url="jdbc:mysql://localhost/proyectos?useSSL=false&amp;allowMultiQueries=true&amp;serverTimezone=UTC" driverClass="com.mysql.cj.jdbc.Driver" />
+      <data-source id="8034c8ac-6f81-49f3-bc9e-ab5d1b4882e7" name="moduloProyectos2" url="jdbc:mysql://localhost/modulo_proyectos" driverClass="com.mysql.cj.jdbc.Driver" />
     </data-sources>
+    <data-source-infos>
+      <data-source-info id="a0de98f3-273c-40e4-b356-cf42cfc38f75" persistence-unit-name="Default" />
+    </data-source-infos>
   </component>
 </project>

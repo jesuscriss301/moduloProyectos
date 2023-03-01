@@ -1,16 +1,10 @@
 package com.carboexco.moduloProyectos.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 
 @Entity
-@Getter
-@Setter
-@Data
 @Table(name = "bitacora")
 public class Bitacora {
     @Id
@@ -18,7 +12,7 @@ public class Bitacora {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_tarea", nullable = false, referencedColumnName = "id_tarea")
+    @JoinColumn(name = "id_tarea", nullable = false)
     private Tarea idTarea;
 
     @Lob
@@ -34,5 +28,53 @@ public class Bitacora {
 
     @Column(name = "file_foto", nullable = false)
     private Integer fileFoto;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Tarea getIdTarea() {
+        return idTarea;
+    }
+
+    public void setIdTarea(Tarea idTarea) {
+        this.idTarea = idTarea;
+    }
+
+    public String getDescripcionBitacora() {
+        return descripcionBitacora;
+    }
+
+    public void setDescripcionBitacora(String descripcionBitacora) {
+        this.descripcionBitacora = descripcionBitacora;
+    }
+
+    public String getObservacionBitacora() {
+        return observacionBitacora;
+    }
+
+    public void setObservacionBitacora(String observacionBitacora) {
+        this.observacionBitacora = observacionBitacora;
+    }
+
+    public Instant getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(Instant fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public Integer getFileFoto() {
+        return fileFoto;
+    }
+
+    public void setFileFoto(Integer fileFoto) {
+        this.fileFoto = fileFoto;
+    }
 
 }

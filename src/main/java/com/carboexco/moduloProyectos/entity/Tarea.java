@@ -1,16 +1,10 @@
 package com.carboexco.moduloProyectos.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter
-@Data
 @Table(name = "tarea")
 public class Tarea {
     @Id
@@ -40,5 +34,69 @@ public class Tarea {
 
     @Column(name = "fecha_final_real")
     private LocalDate fechaFinalReal;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public EtapaProyecto getIdEtapaProyecto() {
+        return idEtapaProyecto;
+    }
+
+    public void setIdEtapaProyecto(EtapaProyecto idEtapaProyecto) {
+        this.idEtapaProyecto = idEtapaProyecto;
+    }
+
+    public String getNombreTarea() {
+        return nombreTarea;
+    }
+
+    public void setNombreTarea(String nombreTarea) {
+        this.nombreTarea = nombreTarea;
+    }
+
+    public String getDescripcionTarea() {
+        return descripcionTarea;
+    }
+
+    public void setDescripcionTarea(String descripcionTarea) {
+        this.descripcionTarea = descripcionTarea;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFinal() {
+        return fechaFinal;
+    }
+
+    public void setFechaFinal(LocalDate fechaFinal) {
+        this.fechaFinal = fechaFinal;
+    }
+
+    public LocalDate getFechaInicioReal() {
+        return fechaInicioReal;
+    }
+
+    public void setFechaInicioReal(LocalDate fechaInicioReal) {
+        this.fechaInicioReal = fechaInicioReal;
+    }
+
+    public LocalDate getFechaFinalReal() {
+        return fechaFinalReal;
+    }
+
+    public void setFechaFinalReal(LocalDate fechaFinalReal) {
+        this.fechaFinalReal = fechaFinalReal;
+    }
 
 }

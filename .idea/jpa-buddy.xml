@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="JpaBuddyIdeaProjectConfig" ddlActionDbType="mysql">
+  <component name="JpaBuddyIdeaProjectConfig" ddlActionDbType="mysql" isInitGenerateDdl="true">
+    <option name="sourceDiffType" value="DB" />
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
-    <option name="reverseEngineeringLastDbConnectionId" value="0ac10720-60c8-4cea-99ef-b02ed0c3f42f" />
+    <option name="sourceDbValue" value="0176c2a6-6496-4fef-a2f1-f677fa8cdc57" />
+    <option name="sourceModelValue" value="Default" />
+    <option name="targetDbValue" value="a0de98f3-273c-40e4-b356-cf42cfc38f75" />
+    <option name="isSnapshotDb" value="false" />
+    <option name="snapshotModelValue" value="Default" />
+    <option name="reverseEngineeringLastDbConnectionId" value="8034c8ac-6f81-49f3-bc9e-ab5d1b4882e7" />
     <option name="reLastEntityCreationPackage" value="src/main/java/com/carboexco/moduloProyectos/entity" />
-    <option name="newEntityIdStrategy" value="Identity" />
+    <reUseDbSnapshotConnections>
+      <dbConnection id="a0de98f3-273c-40e4-b356-cf42cfc38f75" />
+      <dbConnection id="24716eca-2532-4982-a430-d42235964949" />
+    </reUseDbSnapshotConnections>
     <option name="reIgnoreSlowDbConnections">
-      <ignoreDs id="0ac10720-60c8-4cea-99ef-b02ed0c3f42f" />
+      <ignoreDs id="a0de98f3-273c-40e4-b356-cf42cfc38f75" />
+      <ignoreDs id="24716eca-2532-4982-a430-d42235964949" />
+      <ignoreDs id="0176c2a6-6496-4fef-a2f1-f677fa8cdc57" />
+      <ignoreDs id="8034c8ac-6f81-49f3-bc9e-ab5d1b4882e7" />
     </option>
   </component>
 </project>
