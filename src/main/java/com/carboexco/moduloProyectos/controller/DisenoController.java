@@ -33,7 +33,7 @@ public class DisenoController {
 
         return null;
     }
-    @GetMapping("/deseno/proyecto/{id}")
+    @GetMapping("/diseno/proyecto/{id}")
     public List<Diseno> getproyectoById(@PathVariable int id) {
         List<Diseno> disenos = disenoRepository.findAll();
         ArrayList<Diseno> disenoProyecto = new ArrayList<Diseno>();
