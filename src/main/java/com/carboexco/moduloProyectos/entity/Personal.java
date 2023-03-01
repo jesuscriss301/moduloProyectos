@@ -4,8 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
+@Data
 @Table(name = "personal")
 public class Personal {
     @Id
@@ -14,21 +20,5 @@ public class Personal {
 
     @Column(name = "id_cargo", nullable = false)
     private Integer idCargo;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getIdCargo() {
-        return idCargo;
-    }
-
-    public void setIdCargo(Integer idCargo) {
-        this.idCargo = idCargo;
-    }
 
 }

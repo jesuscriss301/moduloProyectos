@@ -4,8 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
+@Data
 @Table(name = "material")
 public class Material {
     @Id
@@ -17,29 +23,5 @@ public class Material {
 
     @Column(name = "tipo_material", nullable = false, length = 15)
     private String tipoMaterial;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getIdProducto() {
-        return idProducto;
-    }
-
-    public void setIdProducto(Integer idProducto) {
-        this.idProducto = idProducto;
-    }
-
-    public String getTipoMaterial() {
-        return tipoMaterial;
-    }
-
-    public void setTipoMaterial(String tipoMaterial) {
-        this.tipoMaterial = tipoMaterial;
-    }
 
 }
