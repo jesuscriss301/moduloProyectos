@@ -4,7 +4,6 @@ import com.carboexco.moduloProyectos.repository.ProyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +51,7 @@ public class ProyectoController {
             proyectoReturn.setJustificacion(proyecto.getJustificacion());
             proyectoReturn.setUbicacion(proyecto.getUbicacion());
             proyectoReturn.setIdPrioridad(proyecto.getIdPrioridad());
-            proyectoReturn.setIdTipoproyecto(proyecto.getIdTipoproyecto());
+            proyectoReturn.setIdTipoProyecto(proyecto.getIdTipoProyecto());
             proyectoReturn.setObjetivoGeneral(proyecto.getObjetivoGeneral());
             proyectoReturn.setObjetivoEspecifico(proyecto.getObjetivoEspecifico());
             proyectoRepository.save(proyectoReturn);

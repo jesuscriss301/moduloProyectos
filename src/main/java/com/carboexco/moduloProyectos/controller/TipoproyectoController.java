@@ -11,6 +11,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/tipoproyectos")
+
 public class TipoproyectoController {
 
     @Autowired
