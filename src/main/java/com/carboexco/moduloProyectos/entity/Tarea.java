@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -40,5 +42,6 @@ public class Tarea {
 
     @Column(name = "fecha_final_real")
     private LocalDate fechaFinalReal;
+
 
 }

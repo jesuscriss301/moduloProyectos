@@ -1,12 +1,7 @@
 package com.carboexco.moduloProyectos.controller;
-import com.carboexco.moduloProyectos.entity.Etapa;
-import com.carboexco.moduloProyectos.entity.EtapaProyecto;
-import com.carboexco.moduloProyectos.entity.Proyecto;
-import com.carboexco.moduloProyectos.entity.Tipoproyecto;
-import com.carboexco.moduloProyectos.repository.EtapaProyectoRepository;
-import com.carboexco.moduloProyectos.repository.EtapaRepository;
-import com.carboexco.moduloProyectos.repository.ProyectoRepository;
-import com.carboexco.moduloProyectos.repository.TipoproyectoRepository;
+import com.carboexco.moduloProyectos.entity.*;
+import com.carboexco.moduloProyectos.repository.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +25,9 @@ public class ProyectoController {
     private EtapaProyectoRepository etapaProyectoRepository;
     @Autowired
     private EtapaRepository etapaRepository;
+    @Autowired
+    private TareaRepository tareaPersonaRepository;
+
 
     @GetMapping
     public List<Proyecto> getProyectoAll() {
@@ -67,11 +65,21 @@ public class ProyectoController {
     @GetMapping("/barras")
     public String[][] barras() {
         List<Proyecto> proyectosEjecucion= proyectosEjecucion(proyectoRepository.findAll());
-        String[][] circularfilas= new String[proyectosEjecucion.size()][];
-        return null;
+        String[][] barrasfilas= new String[proyectosEjecucion.size()][];
+        int n = 0;
+        Optional<Etapa> etapa= etapaRepository.findById(5);
+        for (Proyecto i : proyectosEjecucion) {
+            String[] barrasColumnas= new String[3];
+            barrasColumnas[0]=proyectosEjecucion.get(n).getNombreProyecto();
+            List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get()));
+            barrasColumnas[1] = String.valueOf(tareas.size());
+            barrasColumnas[2]= String.valueOf(TareaController.gettareasTerminadas(tareas).size());
+            barrasfilas[n]=barrasColumnas;
+        }
+        return barrasfilas;
     }
 
-    private List<Proyecto> proyectosEjecucion(List<Proyecto> proyectos){
+    private @NotNull List<Proyecto> proyectosEjecucion(@NotNull List<Proyecto> proyectos){
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
         if(!proyectos.isEmpty()){
         Optional<Etapa> etapa= etapaRepository.findById(5);

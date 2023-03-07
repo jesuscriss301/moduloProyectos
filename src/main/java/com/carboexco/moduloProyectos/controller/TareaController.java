@@ -26,7 +26,7 @@ public class TareaController {
     }
 
     @GetMapping("proyecto/{id}")
-    public List<Tarea> getEtapaById(@PathVariable int id) {
+    public List<Tarea> getProyectoById(@PathVariable int id) {
         List<Tarea> tarea= tareaRepository.findAll();
 
         List<Tarea> tareaetapa = new ArrayList<Tarea>();
@@ -37,6 +37,18 @@ public class TareaController {
             }
         return tareaetapa;
     }
+
+    public static List<Tarea> gettareasTerminadas(List<Tarea> tareas){
+        List<Tarea> tareasListas = new ArrayList<>();
+        for (Tarea i : tareas){
+            if(i.getFechaFinalReal()==null && i.getFechaInicioReal()!=null){
+                tareasListas.add(i);
+            }
+        }
+        return tareasListas;
+    }
+
+
 
     @GetMapping("/{id}")
     public Tarea getTareabyId(@PathVariable int id) {
