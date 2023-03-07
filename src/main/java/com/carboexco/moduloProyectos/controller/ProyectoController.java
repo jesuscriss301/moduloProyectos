@@ -1,9 +1,18 @@
 package com.carboexco.moduloProyectos.controller;
+import com.carboexco.moduloProyectos.entity.Etapa;
+import com.carboexco.moduloProyectos.entity.EtapaProyecto;
 import com.carboexco.moduloProyectos.entity.Proyecto;
+import com.carboexco.moduloProyectos.entity.Tipoproyecto;
+import com.carboexco.moduloProyectos.repository.EtapaProyectoRepository;
+import com.carboexco.moduloProyectos.repository.EtapaRepository;
 import com.carboexco.moduloProyectos.repository.ProyectoRepository;
+import com.carboexco.moduloProyectos.repository.TipoproyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +23,12 @@ public class ProyectoController {
 
     @Autowired
     ProyectoRepository proyectoRepository;
+    @Autowired
+    private TipoproyectoRepository tipoproyectoRepository;
+    @Autowired
+    private EtapaProyectoRepository etapaProyectoRepository;
+    @Autowired
+    private EtapaRepository etapaRepository;
 
     @GetMapping
     public List<Proyecto> getProyectoAll() {
@@ -30,6 +45,18 @@ public class ProyectoController {
         }
 
         return null;
+    }
+    @GetMapping("/tipoproyecto/{id}")
+    public List<Proyecto> proyectobyTipo(@PathVariable int id) {
+        Optional<Tipoproyecto> tipo= tipoproyectoRepository.findById(id);
+        List <Proyecto> proyectos= proyectoRepository.findByidTipoProyecto(tipo.get());
+        Optional<Etapa> etapa= etapaRepository.findById(5);
+        List <Proyecto> proyectosEjecucion= new ArrayList<>();
+        for (Proyecto i :proyectos) {
+            EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
+            if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
+        }
+        return proyectosEjecucion;
     }
 
     @PostMapping
