@@ -41,7 +41,7 @@ public class TareaController {
     public static List<Tarea> gettareasTerminadas(List<Tarea> tareas){
         List<Tarea> tareasListas = new ArrayList<>();
         for (Tarea i : tareas){
-            if(i.getFechaFinalReal()==null && i.getFechaInicioReal()!=null){
+            if(i.getFechaFinalReal()!=null && i.getIdEtapaProyecto().getIdEstado().getId()==2){
                 tareasListas.add(i);
             }
         }
