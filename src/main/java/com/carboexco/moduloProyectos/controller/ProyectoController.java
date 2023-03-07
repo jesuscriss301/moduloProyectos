@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,16 +47,38 @@ public class ProyectoController {
 
         return null;
     }
-    @GetMapping("/tipoproyecto/{id}")
-    public List<Proyecto> proyectobyTipo(@PathVariable int id) {
-        Optional<Tipoproyecto> tipo= tipoproyectoRepository.findById(id);
-        List <Proyecto> proyectos= proyectoRepository.findByidTipoProyecto(tipo.get());
-        Optional<Etapa> etapa= etapaRepository.findById(5);
+
+    @GetMapping("/circular")
+    public String[][] circular() {
+        List<Tipoproyecto> tipos= tipoproyectoRepository.findAll();
+        String[][] circularfilas= new String[tipos.size()][];
+        int n = 0;
+        for (Tipoproyecto i : tipos) {
+
+            List <Proyecto> p= proyectoRepository.findByidTipoProyecto(i);
+            String[] circularcolumnas=new String[2];
+            circularcolumnas[0]=i.getNombre();
+            circularcolumnas[1]= String.valueOf(proyectosEjecucion(p).size());
+            circularfilas[n++]= circularcolumnas;
+
+        }
+        return circularfilas;
+    }
+    @GetMapping("/barras")
+    public String[][] barras() {
+        List<Proyecto> proyectosEjecucion= proyectosEjecucion(proyectoRepository.findAll());
+        String[][] circularfilas= new String[proyectosEjecucion.size()][];
+        return null;
+    }
+
+    private List<Proyecto> proyectosEjecucion(List<Proyecto> proyectos){
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
+        if(!proyectos.isEmpty()){
+        Optional<Etapa> etapa= etapaRepository.findById(5);
         for (Proyecto i :proyectos) {
             EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
             if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
-        }
+        }}
         return proyectosEjecucion;
     }
 
