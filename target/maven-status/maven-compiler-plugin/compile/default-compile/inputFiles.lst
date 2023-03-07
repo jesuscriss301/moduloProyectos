@@ -1,5 +1,6 @@
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\PresupuestoPersonalController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\TareaController.java
+C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\ProyectoPersonaController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\StatusController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\repository\EstadoRepository.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\entity\Estado.java
@@ -44,6 +45,7 @@ C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\PersonalController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\PresupuestoController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\ProyectoController.java
+C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\controller\TareaPersonaController.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\entity\Bitacora.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\repository\PresupuestoPersonalRepository.java
 C:\Users\SISTEMAS\Documents\aplicacion planta\moduloProyectos\src\main\java\com\carboexco\moduloProyectos\repository\PresupuestoMaterialRepository.java
