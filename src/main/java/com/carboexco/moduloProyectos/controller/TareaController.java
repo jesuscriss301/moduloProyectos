@@ -1,7 +1,10 @@
 package com.carboexco.moduloProyectos.controller;
 
+import com.carboexco.moduloProyectos.entity.ProyectoPersona;
 import com.carboexco.moduloProyectos.entity.Tarea;
+import com.carboexco.moduloProyectos.entity.TareaPersona;
 import com.carboexco.moduloProyectos.repository.TareaRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,6 +88,15 @@ public class TareaController {
         return null;
     }
 
+    @GetMapping("/{proyecto}/{etapa}")
+    public List<Tarea> tareasEtapaProyecto(@PathVariable int proyecto,@PathVariable int etapa){
+
+        return tareaRepository.findByIdEtapaProyecto_IdProyecto_IdAndIdEtapaProyecto_IdEtapa_Id(proyecto,etapa);
+    }
+
+    public String personaTarea(@NotNull TareaPersona tareaP) {
+        return tareaP.getId().getIdTarea().toString();
+    }
 
     @DeleteMapping("/{id}")
     public Tarea deleteTareabyId(@PathVariable int id) {

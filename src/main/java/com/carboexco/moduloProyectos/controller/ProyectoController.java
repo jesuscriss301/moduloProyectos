@@ -44,34 +44,43 @@ public class ProyectoController {
     }
 
     @GetMapping("/circular")
-    public String[][] circular() {
+    public Object[][] circular() {
         List<Tipoproyecto> tipos= tipoproyectoRepository.findAll();
-        String[][] circularfilas= new String[tipos.size()][];
-        int n = 0;
+        Object[][] circularfilas= new Object[tipos.size()+1][];
+        int n = 1;
+        Object[] circular1=new Object[2];
+        circular1[0]="Tipo de proyecto";
+        circular1[1]="cantidad de proyectos";
+        circularfilas[0]=circular1;
         for (Tipoproyecto i : tipos) {
-
             List <Proyecto> p= proyectoRepository.findByidTipoProyecto(i);
-            String[] circularcolumnas=new String[2];
+            Object[] circularcolumnas=new Object[2];
             circularcolumnas[0]=i.getNombre();
-            circularcolumnas[1]= String.valueOf(proyectosEtapa(p,5).size());
-            circularfilas[n++]= circularcolumnas;
-
+            circularcolumnas[1]= proyectosEtapa(p,5).size();
+            circularfilas[n]= circularcolumnas;
+            n++;
         }
         return circularfilas;
     }
     @GetMapping("/barras")
-    public String[][] barras() {
+    public Object[][] barras() {
         List<Proyecto> proyectosEjecucion= proyectosEtapa(5);
-        String[][] barrasfilas= new String[proyectosEjecucion.size()][];
-        int n = 0;
+        Object[][] barrasfilas= new Object[proyectosEjecucion.size()+1][];
+        Object[] barras1=new Object[3];
+        barras1[0]="nombre de proyecto";
+        barras1[1]="Tareas";
+        barras1[2]="Tareas completadas";
+        barrasfilas[0]=barras1;
+        int n = 1;
         Optional<Etapa> etapa= etapaRepository.findById(5);
         for (Proyecto i : proyectosEjecucion) {
-            String[] barrasColumnas= new String[3];
-            barrasColumnas[0]=proyectosEjecucion.get(n).getNombreProyecto();
+            Object[] barrasColumnas= new Object[3];
+            barrasColumnas[0]=i.getNombreProyecto();
             List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get()));
-            barrasColumnas[1] = String.valueOf(tareas.size());
-            barrasColumnas[2]= String.valueOf(TareaController.gettareasTerminadas(tareas).size());
+            barrasColumnas[1] = tareas.size();
+            barrasColumnas[2]= TareaController.gettareasTerminadas(tareas).size();
             barrasfilas[n]=barrasColumnas;
+            n++;
         }
         return barrasfilas;
     }
@@ -83,19 +92,21 @@ public class ProyectoController {
         Optional<Etapa> etapa= etapaRepository.findById(5);
 
         for (Proyecto i : proyectosEjecucion) {
-            Optional<ProyectoPersona> proyectoP= proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(),etapa.get().getId());
-            if (proyectoP.isPresent()){
+            List<ProyectoPersona> proyectoP= proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(),etapa.get().getId());
+            //System.out.println("______________________________"+proyectoP+"___________________________________");
+            if(!proyectoP.isEmpty()){
 
                 String tablaColumnas[]=new String[3];
                 tablaColumnas[0]=i.getNombreProyecto();
-                tablaColumnas[1]=personaProyecto(proyectoP.get());
+                tablaColumnas[1]= proyectoP.get(1).getId().getPersona().toString();
                 tablaColumnas[2]=this.avanceProyecto(i,etapa.get())+"%";
                 tablafilas[n++]=tablaColumnas;
+                System.out.println("--------------"+proyectoP.+"_____________________");
             }
         }
+
         return tablafilas;
     }
-
 
     public String personaProyecto(@NotNull ProyectoPersona proyectoP) {
         return proyectoP.getId().getPersona().toString();
@@ -109,7 +120,7 @@ public class ProyectoController {
             return numerotareasterminadas / numerotareas * 100;
         }else return 0f;
     }
-    
+
 
     @GetMapping("/{idetapa}")
     public List<Proyecto> proyectosEtapa(@PathVariable int idetapa){
@@ -123,11 +134,12 @@ public class ProyectoController {
         }}
         return proyectosEjecucion;
     }
-    private @NotNull List<Proyecto> proyectosEtapa(@NotNull List<Proyecto> proyectos,int idetapa){
+    private List<Proyecto> proyectosEtapa (List<Proyecto> proyectos,int idetapa){
 
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
         if(!proyectos.isEmpty()){
             Optional<Etapa> etapa= etapaRepository.findById(idetapa);
+            System.out.println(etapa);
             for (Proyecto i :proyectos) {
                 EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
                 if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
