@@ -40,7 +40,6 @@ public class ProyectoController {
         if (proyecto.isPresent()) {
             return proyecto.get();
         }
-
         return null;
     }
 
@@ -62,7 +61,7 @@ public class ProyectoController {
     }
     @GetMapping("/barras")
     public String[][] barras() {
-        List<Proyecto> proyectosEjecucion= proyectosEtapa(proyectoRepository.findAll(),5);
+        List<Proyecto> proyectosEjecucion= proyectosEtapa(5);
         String[][] barrasfilas= new String[proyectosEjecucion.size()][];
         int n = 0;
         Optional<Etapa> etapa= etapaRepository.findById(5);
@@ -78,7 +77,7 @@ public class ProyectoController {
     }
     @GetMapping("/tabla")
     public String[][] tabla() {
-        List<Proyecto> proyectosEjecucion= proyectosEtapa(proyectoRepository.findAll(),5);
+        List<Proyecto> proyectosEjecucion= proyectosEtapa(5);
         String[][] tablafilas= new String[proyectosEjecucion.size()][];
         int n = 0;
         Optional<Etapa> etapa= etapaRepository.findById(5);
@@ -97,19 +96,24 @@ public class ProyectoController {
         return tablafilas;
     }
 
+
     public String personaProyecto(@NotNull ProyectoPersona proyectoP) {
         return proyectoP.getId().getPersona().toString();
     }
 
     public double avanceProyecto(Proyecto i, Etapa e){
-
-        List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,e));
-        int numerotareas= tareas.size();
-        int numerotareasterminadas= TareaController.gettareasTerminadas(tareas).size();
-        return numerotareasterminadas/numerotareas*100;
+        if (e.getId()==5) {
+            List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e));
+            int numerotareas = tareas.size();
+            int numerotareasterminadas = TareaController.gettareasTerminadas(tareas).size();
+            return numerotareasterminadas / numerotareas * 100;
+        }else return 0f;
     }
+    
 
-    private @NotNull List<Proyecto> proyectosEtapa(@NotNull List<Proyecto> proyectos,int idetapa){
+    @GetMapping("/{idetapa}")
+    public List<Proyecto> proyectosEtapa(@PathVariable int idetapa){
+        List<Proyecto> proyectos=proyectoRepository.findAll();
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
         if(!proyectos.isEmpty()){
         Optional<Etapa> etapa= etapaRepository.findById(idetapa);
@@ -117,6 +121,17 @@ public class ProyectoController {
             EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
             if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
         }}
+        return proyectosEjecucion;
+    }
+    private @NotNull List<Proyecto> proyectosEtapa(@NotNull List<Proyecto> proyectos,int idetapa){
+
+        List <Proyecto> proyectosEjecucion= new ArrayList<>();
+        if(!proyectos.isEmpty()){
+            Optional<Etapa> etapa= etapaRepository.findById(idetapa);
+            for (Proyecto i :proyectos) {
+                EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
+                if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
+            }}
         return proyectosEjecucion;
     }
 
