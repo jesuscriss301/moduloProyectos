@@ -1,8 +1,5 @@
 package com.carboexco.moduloProyectos.controller;
-import com.carboexco.moduloProyectos.entity.Etapa;
-import com.carboexco.moduloProyectos.entity.EtapaProyecto;
 import com.carboexco.moduloProyectos.entity.Tarea;
-import com.carboexco.moduloProyectos.repository.EtapaProyectoRepository;
 import com.carboexco.moduloProyectos.repository.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +15,6 @@ public class TareaController {
 
     @Autowired
     TareaRepository tareaRepository;
-
 
     @GetMapping
     public List<Tarea> getTareaAll() {
@@ -47,8 +43,6 @@ public class TareaController {
         }
         return tareasListas;
     }
-
-
 
     @GetMapping("/{id}")
     public Tarea getTareabyId(@PathVariable int id) {

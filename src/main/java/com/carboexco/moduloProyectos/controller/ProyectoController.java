@@ -91,19 +91,22 @@ public class ProyectoController {
         for (Proyecto i : proyectosEjecucion) {
             Optional<ProyectoPersona> proyectoP= proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(),etapa.get().getId());
             if (proyectoP.isPresent()){
-                List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get()));
-                int numerotareas= tareas.size();
-                int numerotareasterminadas= TareaController.gettareasTerminadas(tareas).size();
 
                 String tablaColumnas[]=new String[3];
                 tablaColumnas[0]=i.getNombreProyecto();
                 tablaColumnas[1]=proyectoP.get().getId().getPersona().toString();
-                tablaColumnas[2]= String.valueOf((numerotareasterminadas/numerotareas)*100+"%");
+                tablaColumnas[2]=this.avanceProyecto(i,etapa.get())+"%";
                 tablafilas[n++]=tablaColumnas;
-
             }
         }
         return tablafilas;
+    }
+    public double avanceProyecto(Proyecto i, Etapa e){
+
+        List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,e));
+        int numerotareas= tareas.size();
+        int numerotareasterminadas= TareaController.gettareasTerminadas(tareas).size();
+        return numerotareasterminadas/numerotareas*100;
     }
 
     private @NotNull List<Proyecto> proyectosEjecucion(@NotNull List<Proyecto> proyectos){
