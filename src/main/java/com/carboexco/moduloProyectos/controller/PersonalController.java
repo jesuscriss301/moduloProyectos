@@ -1,10 +1,10 @@
 package com.carboexco.moduloProyectos.controller;
+
 import com.carboexco.moduloProyectos.entity.Personal;
 import com.carboexco.moduloProyectos.repository.PersonalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

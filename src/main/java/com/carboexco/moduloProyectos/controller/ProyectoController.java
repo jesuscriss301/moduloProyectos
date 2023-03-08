@@ -3,12 +3,9 @@ import com.carboexco.moduloProyectos.entity.*;
 import com.carboexco.moduloProyectos.repository.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +26,6 @@ public class ProyectoController {
     private TareaRepository tareaPersonaRepository;
     @Autowired
     private ProyectoPersonaRepository proyectoPersonaRepository;
-
-
 
     @GetMapping
     public List<Proyecto> getProyectoAll() {
@@ -59,7 +54,7 @@ public class ProyectoController {
             List <Proyecto> p= proyectoRepository.findByidTipoProyecto(i);
             String[] circularcolumnas=new String[2];
             circularcolumnas[0]=i.getNombre();
-            circularcolumnas[1]= String.valueOf(proyectosEjecucion(p).size());
+            circularcolumnas[1]= String.valueOf(proyectosEtapa(p,5).size());
             circularfilas[n++]= circularcolumnas;
 
         }
@@ -67,7 +62,7 @@ public class ProyectoController {
     }
     @GetMapping("/barras")
     public String[][] barras() {
-        List<Proyecto> proyectosEjecucion= proyectosEjecucion(proyectoRepository.findAll());
+        List<Proyecto> proyectosEjecucion= proyectosEtapa(proyectoRepository.findAll(),5);
         String[][] barrasfilas= new String[proyectosEjecucion.size()][];
         int n = 0;
         Optional<Etapa> etapa= etapaRepository.findById(5);
@@ -83,7 +78,7 @@ public class ProyectoController {
     }
     @GetMapping("/tabla")
     public String[][] tabla() {
-        List<Proyecto> proyectosEjecucion= proyectosEjecucion(proyectoRepository.findAll());
+        List<Proyecto> proyectosEjecucion= proyectosEtapa(proyectoRepository.findAll(),5);
         String[][] tablafilas= new String[proyectosEjecucion.size()][];
         int n = 0;
         Optional<Etapa> etapa= etapaRepository.findById(5);
@@ -94,13 +89,18 @@ public class ProyectoController {
 
                 String tablaColumnas[]=new String[3];
                 tablaColumnas[0]=i.getNombreProyecto();
-                tablaColumnas[1]=proyectoP.get().getId().getPersona().toString();
+                tablaColumnas[1]=personaProyecto(proyectoP.get());
                 tablaColumnas[2]=this.avanceProyecto(i,etapa.get())+"%";
                 tablafilas[n++]=tablaColumnas;
             }
         }
         return tablafilas;
     }
+
+    public String personaProyecto(@NotNull ProyectoPersona proyectoP) {
+        return proyectoP.getId().getPersona().toString();
+    }
+
     public double avanceProyecto(Proyecto i, Etapa e){
 
         List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,e));
@@ -109,10 +109,10 @@ public class ProyectoController {
         return numerotareasterminadas/numerotareas*100;
     }
 
-    private @NotNull List<Proyecto> proyectosEjecucion(@NotNull List<Proyecto> proyectos){
+    private @NotNull List<Proyecto> proyectosEtapa(@NotNull List<Proyecto> proyectos,int idetapa){
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
         if(!proyectos.isEmpty()){
-        Optional<Etapa> etapa= etapaRepository.findById(5);
+        Optional<Etapa> etapa= etapaRepository.findById(idetapa);
         for (Proyecto i :proyectos) {
             EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
             if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
@@ -145,10 +145,8 @@ public class ProyectoController {
             proyectoRepository.save(proyectoReturn);
             return proyectoReturn;
         }
-
         return null;
     }
-
 
     @DeleteMapping("/{id}")
     public Proyecto deleteProyectobyId(@PathVariable int id) {

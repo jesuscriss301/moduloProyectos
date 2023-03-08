@@ -1,6 +1,6 @@
 package com.carboexco.moduloProyectos.controller;
+
 import com.carboexco.moduloProyectos.entity.TareaPersona;
-import com.carboexco.moduloProyectos.entity.TareaPersonaId;
 import com.carboexco.moduloProyectos.repository.TareaPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

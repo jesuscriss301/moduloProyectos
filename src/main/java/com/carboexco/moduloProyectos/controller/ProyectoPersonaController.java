@@ -1,6 +1,5 @@
 package com.carboexco.moduloProyectos.controller;
 import com.carboexco.moduloProyectos.entity.ProyectoPersona;
-import com.carboexco.moduloProyectos.entity.ProyectoPersonaId;
 import com.carboexco.moduloProyectos.repository.ProyectoPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,5 @@
 package com.carboexco.moduloProyectos.controller;
+
 import com.carboexco.moduloProyectos.entity.Bitacora;
 import com.carboexco.moduloProyectos.repository.BitacoraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
