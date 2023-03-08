@@ -27,6 +27,9 @@ public class ProyectoController {
     private EtapaRepository etapaRepository;
     @Autowired
     private TareaRepository tareaPersonaRepository;
+    @Autowired
+    private ProyectoPersonaRepository proyectoPersonaRepository;
+
 
 
     @GetMapping
@@ -77,6 +80,30 @@ public class ProyectoController {
             barrasfilas[n]=barrasColumnas;
         }
         return barrasfilas;
+    }
+    @GetMapping("/tabla")
+    public String[][] tabla() {
+        List<Proyecto> proyectosEjecucion= proyectosEjecucion(proyectoRepository.findAll());
+        String[][] tablafilas= new String[proyectosEjecucion.size()][];
+        int n = 0;
+        Optional<Etapa> etapa= etapaRepository.findById(5);
+
+        for (Proyecto i : proyectosEjecucion) {
+            Optional<ProyectoPersona> proyectoP= proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(),etapa.get().getId());
+            if (proyectoP.isPresent()){
+                List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get()));
+                int numerotareas= tareas.size();
+                int numerotareasterminadas= TareaController.gettareasTerminadas(tareas).size();
+
+                String tablaColumnas[]=new String[3];
+                tablaColumnas[0]=i.getNombreProyecto();
+                tablaColumnas[1]=proyectoP.get().getId().getPersona().toString();
+                tablaColumnas[2]= String.valueOf((numerotareasterminadas/numerotareas)*100+"%");
+                tablafilas[n++]=tablaColumnas;
+
+            }
+        }
+        return tablafilas;
     }
 
     private @NotNull List<Proyecto> proyectosEjecucion(@NotNull List<Proyecto> proyectos){

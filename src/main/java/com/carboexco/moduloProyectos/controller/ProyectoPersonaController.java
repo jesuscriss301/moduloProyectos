@@ -27,7 +27,7 @@ public class ProyectoPersonaController {
         List<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findAll();
         List<ProyectoPersona> proyectoPersonatarea = new ArrayList<ProyectoPersona>();
         for (ProyectoPersona i : proyectoPersona) {
-            if (i.getId().getIdProyecto()==id){
+            if (i.getId().getProyecto()==id){
                 proyectoPersonatarea.add(i);
             }
         }
@@ -39,7 +39,7 @@ public class ProyectoPersonaController {
         List<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findAll();
         List<ProyectoPersona> proyectoPersonatarea = new ArrayList<ProyectoPersona>();
         for (ProyectoPersona i : proyectoPersona) {
-            if (i.getId().getIdPersona()==id){
+            if (i.getId().getPersona()==id){
                 proyectoPersonatarea.add(i);
             }
         }
@@ -63,7 +63,7 @@ public class ProyectoPersonaController {
             ProyectoPersona proyectoPersonaIdReturn = new ProyectoPersona();
 
             for (ProyectoPersona i : proyectoPersonaReturn) {
-                if (i.getId().getIdProyecto() == idPr && i.getId().getIdPersona() == idPr && i.getId().getIdEtapa() == idE) {
+                if (i.getId().getProyecto() == idPr && i.getId().getPersona() == idPr && i.getId().getEtapa() == idE) {
 
                     proyectoPersonaIdReturn = i;
                     proyectoPersonaIdReturn.setFecha(proyectoPersona.getFecha());
@@ -84,7 +84,7 @@ public class ProyectoPersonaController {
             ProyectoPersona proyectoPersonaIdReturn = new ProyectoPersona();
 
             for (ProyectoPersona i : proyectoPersonaReturn) {
-                if (i.getId().getIdProyecto() == idPr && i.getId().getIdPersona() == idPr && i.getId().getIdEtapa() == idE) {
+                if (i.getId().getProyecto() == idPr && i.getId().getPersona() == idPr && i.getId().getEtapa() == idE) {
                     proyectoPersonaRepository.delete(i);
                     return i;
                 }
