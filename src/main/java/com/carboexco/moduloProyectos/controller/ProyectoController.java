@@ -76,9 +76,10 @@ public class ProyectoController {
         int n = 1;
         Optional<Etapa> etapa= etapaRepository.findById(5);
         for (Proyecto i : proyectosEjecucion) {
+
             Object[] barrasColumnas= new Object[3];
             barrasColumnas[0]=i.getNombreProyecto();
-            List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get()));
+            List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, etapa.get()));
             barrasColumnas[1] = tareas.size();
             barrasColumnas[2]= TareaController.gettareasTerminadas(tareas).size();
             barrasfilas[n]=barrasColumnas;
@@ -106,7 +107,6 @@ public class ProyectoController {
                 tablaFilas[n++] = new Object[] {nombreProyecto, idsPersonas, avanceProyecto};
             }
         }
-        System.out.println(tablaFilas);
         return tablaFilas;
     }
 
@@ -115,12 +115,16 @@ public class ProyectoController {
     }
 
     public float avanceProyecto(Proyecto i, Etapa e){
+        float rta=0f;
         if (e.getId()==5) {
             List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e));
             int numerotareas = tareas.size();
             int numerotareasterminadas = TareaController.gettareasTerminadas(tareas).size();
-            return numerotareasterminadas / numerotareas * 100;
-        }else return 0f;
+            if(numerotareas!=0){
+                 rta= numerotareasterminadas / numerotareas * 100;
+            }
+        }
+        return rta;
     }
 
 
