@@ -5,9 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -85,34 +87,34 @@ public class ProyectoController {
         return barrasfilas;
     }
     @GetMapping("/tabla")
-    public String[][] tabla() {
-        List<Proyecto> proyectosEjecucion= proyectosEtapa(5);
-        String[][] tablafilas= new String[proyectosEjecucion.size()][];
-        int n = 0;
-        Optional<Etapa> etapa= etapaRepository.findById(5);
-
+    public Object[][] tabla() {
+        List<Proyecto> proyectosEjecucion = proyectosEtapa(5);
+        Object[][] tablaFilas = new Object[proyectosEjecucion.size()+1][];
+        Optional<Etapa> etapa = etapaRepository.findById(5);
+        Object[] barras1=new Object[3];
+        barras1[0]="nombre de proyecto";
+        barras1[1]="responsables";
+        barras1[2]="avances";
+        tablaFilas[0]=barras1;
+        int n = 1;
         for (Proyecto i : proyectosEjecucion) {
-            List<ProyectoPersona> proyectoP= proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(),etapa.get().getId());
-            //System.out.println("______________________________"+proyectoP+"___________________________________");
-            if(!proyectoP.isEmpty()){
-
-                String tablaColumnas[]=new String[3];
-                tablaColumnas[0]=i.getNombreProyecto();
-                tablaColumnas[1]= proyectoP.get(1).getId().getPersona().toString();
-                tablaColumnas[2]=this.avanceProyecto(i,etapa.get())+"%";
-                tablafilas[n++]=tablaColumnas;
-                System.out.println("--------------"+proyectoP.+"_____________________");
+            List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
+            if (!proyectoP.isEmpty()) {
+                String nombreProyecto = i.getNombreProyecto();
+                String idsPersonas = proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", "));
+                float avanceProyecto = this.avanceProyecto(i, etapa.get());
+                tablaFilas[n++] = new Object[] {nombreProyecto, idsPersonas, avanceProyecto};
             }
         }
-
-        return tablafilas;
+        System.out.println(tablaFilas);
+        return tablaFilas;
     }
 
     public String personaProyecto(@NotNull ProyectoPersona proyectoP) {
         return proyectoP.getId().getPersona().toString();
     }
 
-    public double avanceProyecto(Proyecto i, Etapa e){
+    public float avanceProyecto(Proyecto i, Etapa e){
         if (e.getId()==5) {
             List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e));
             int numerotareas = tareas.size();
@@ -122,7 +124,7 @@ public class ProyectoController {
     }
 
 
-    @GetMapping("/{idetapa}")
+    @GetMapping("/etapa/{idetapa}")
     public List<Proyecto> proyectosEtapa(@PathVariable int idetapa){
         List<Proyecto> proyectos=proyectoRepository.findAll();
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
