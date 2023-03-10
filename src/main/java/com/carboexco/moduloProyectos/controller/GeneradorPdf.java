@@ -1,17 +1,25 @@
 package com.carboexco.moduloProyectos.controller;
 
 import com.carboexco.moduloProyectos.entity.Proyecto;
+import com.carboexco.moduloProyectos.entity.ProyectoPersona;
+import com.carboexco.moduloProyectos.repository.ProyectoPersonaRepository;
 import com.carboexco.moduloProyectos.repository.ProyectoRepository;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -26,33 +34,39 @@ public class GeneradorPdf {
             Font.BOLD);
     private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.BOLD);
+    private static Font small = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+            Font.NORMAL);
 
     private Proyecto proyecto;
     @Autowired
     ProyectoRepository proyectoRepository;
+    @Autowired
+    private ProyectoPersonaRepository proyectoPersonaRepository;
 
     @GetMapping("/pdf/{id}")
-    public String genearPdf(@PathVariable int id) {
-        try {
+    public String genearPdf(@PathVariable int id) throws FileNotFoundException, DocumentException {
+
             Optional<Proyecto> nuevo = proyectoRepository.findById(id);
 
-            if (nuevo.isPresent()){
-
-                this.proyecto=nuevo.get();
+            if (nuevo.isPresent()) {
+                this.proyecto = nuevo.get();
                 Document document = new Document();
-                PdfWriter.getInstance(document, new FileOutputStream(FILE));
+                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(FILE));
+                Header header = new Header();
+                writer.setPageEvent(header);
+                float headerHeight = 50;
+                float contentMarginTop = 36;
+                float contentMarginBottom = 36;
+                document.setMargins(36, 36 + headerHeight, 36 + contentMarginTop, 36 + contentMarginBottom);
                 document.open();
                 addMetaData(document);
                 addTitlePage(document);
                 addContent(document);
                 document.close();
-            return "generado";}
-            else {
-                throw new Exception();
+                return "generado exitosamente";
+            } else {
+                throw new NullPointerException();
             }
-        } catch (Exception e) {
-            return "error";
-        }
 
     }
 
@@ -67,11 +81,10 @@ public class GeneradorPdf {
         document.addCreator("Lars Vogel");
     }
 
-    private static void addTitlePage(Document document)
-            throws DocumentException {
+    private static void addTitlePage(Document document) throws DocumentException {
         Paragraph preface = new Paragraph();
         // We add one empty line
-        addEmptyLine(preface, 1);
+        addEmptyLine(preface, 3);
         // Lets write a big header
         preface.add(new Paragraph("Informe de proyeto", catFont));
 
@@ -97,40 +110,23 @@ public class GeneradorPdf {
     }
 
     private void addContent(Document document) throws DocumentException {
-        Anchor anchor = new Anchor("Informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
-        anchor.setName("Informe de proyecto "+ this.proyecto.getNombreProyecto());
+        Paragraph encabezado = new Paragraph();
+        addEmptyLine(encabezado, 3);
+
+        Anchor anchor = new Anchor("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
+        anchor.setName("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
 
         // Second parameter is the number of the chapter
-        Chapter catPart = new Chapter(new Paragraph(anchor), 1);
-
-        Paragraph subPara = new Paragraph("Indicé", subFont);
+        Paragraph inicial=new Paragraph(encabezado);
+        inicial.add(anchor);
+        Chapter catPart = new Chapter(inicial, 1);
+        Paragraph paragraph = new Paragraph();
+        addEmptyLine(paragraph, 1);
+        Paragraph subPara = new Paragraph("Información del proyecto", subFont);
         Section subCatPart = catPart.addSection(subPara);
-        int n=1;
-        if(proyecto.getDescripcionProyecto()!=null){
-            subCatPart.add(new Paragraph(n + "Descripción del proyecto"));
-            n++;
-        }
-        if(proyecto.getJustificacion()!=null){
-            subCatPart.add(new Paragraph(n + "Justificación del proyecto"));
-            n++;
-        }
-        if(proyecto.getObjetivoGeneral()!=null){
-            subCatPart.add(new Paragraph(n + "Objetivo general del proyecto"));
-            n++;
-        }
-        if(proyecto.getDescripcionProyecto()!=null){
-            subCatPart.add(new Paragraph(n + "Objetivo especifico del proyecto"));
-            n++;
-        }
-
-        subPara = new Paragraph("Subcategory 2", subFont);
-        subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph("Hello"));
         // add a list
         createList(subCatPart);
-        System.out.println(subCatPart);
-        Paragraph paragraph = new Paragraph();
-        addEmptyLine(paragraph, 5);
+        //Paragraph paragraph = new Paragraph();
         subCatPart.add(paragraph);
 
         // add a table
@@ -140,19 +136,55 @@ public class GeneradorPdf {
         document.add(catPart);
 
         // Next section
-        anchor = new Anchor("Second Chapter", catFont);
-        anchor.setName("Second Chapter");
+        int n =1;
+        anchor = new Anchor("Informe de proyeto", catFont);// Subtitulo
+        anchor.setName("Informe de proyeto");
+        catPart = new Chapter(new Paragraph(anchor), n++);
+        Paragraph preface = new Paragraph();
+        addEmptyLine(preface, 1); //LINEA EN BLANCO
+        ArrayList<ProyectoPersona> proyectoPersona= (ArrayList<ProyectoPersona>) proyectoPersonaRepository.findById_Proyecto(proyecto.getId());
+        String responsables = proyectoPersona.stream()
+                .map(pp -> String.valueOf(pp.getId().getPersona()))
+                .distinct()
+                .collect(Collectors.joining(", ")); //RESPONSABLES DEL PROYECTO
+        preface.add(new Paragraph(
+                "Proyecto "+proyecto.getIdTipoProyecto().getNombre()+" #"+ proyecto.getId()+ " "
+                        +proyecto.getNombreProyecto()+" de prioridad "+proyecto.getIdPrioridad().getNombrePrioridad()+
+                        ", responsables del proyecto "+responsables+"."
+                ,small)); //PARRAFO INFORMACION DEL PROYECTO
+        addEmptyLine(preface,1); //LINEA EN BLANCO
+        catPart.add(preface); //AGREGAR PARRAFO AL DOCUMENTO
 
-        // Second parameter is the number of the chapter
-        catPart = new Chapter(new Paragraph(anchor), 1);
+        if(this.proyecto.getDescripcionProyecto()!=null){
 
-        subPara = new Paragraph("Subcategory", subFont);
-        subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph("This is a very important message"));
+            subPara = new Paragraph("Descripción del proyecto", subFont);//SUBTITULO
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(this.proyecto.getDescripcionProyecto())); //INFORMACION DESCRIPCION
+            subCatPart.add(paragraph);
+        }
+        if(proyecto.getJustificacion()!=null){
+            subPara = new Paragraph("Justificación del proyecto", subFont);//SUBTITULO
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(this.proyecto.getJustificacion()));//INFORMACION DESCRIPCION
+            subCatPart.add(paragraph);
+        }
+        if(proyecto.getObjetivoGeneral()!=null){
+
+            subPara = new Paragraph("Objetivo general del proyecto", subFont);//SUBTITULO
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(this.proyecto.getObjetivoGeneral()));//INFORMACION DESCRIPCION
+            subCatPart.add(paragraph);
+        }
+        if(proyecto.getObjetivoEspecifico()!=null){
+
+            subPara = new Paragraph("Objetivo especifico del proyecto", subFont);//SUBTITULO
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(this.proyecto.getObjetivoEspecifico()));//INFORMACION DESCRIPCION
+            subCatPart.add(paragraph);
+        }
 
         // now add all this to the document
-        document.add(catPart);
-
+        document.add(catPart); //AGREGAR DATOS AL DOCUMENTO
     }
 
     private static void createTable(Section subCatPart)
@@ -188,11 +220,21 @@ public class GeneradorPdf {
 
     }
 
-    private static void createList(Section subCatPart) {
+    private void createList(Section subCatPart) {
         List list = new List(true, false, 10);
-        list.add(new ListItem("First point"));
-        list.add(new ListItem("Second point"));
-        list.add(new ListItem("Third point"));
+        if(this.proyecto.getDescripcionProyecto()!=null){
+            list.add(new ListItem("Descripción del proyecto"));
+        }
+        if(proyecto.getJustificacion()!=null){
+            list.add(new ListItem("Justificación del proyecto"));
+        }
+        if(proyecto.getObjetivoGeneral()!=null){
+            list.add(new ListItem("Objetivo general del proyecto"));
+        }
+        if(proyecto.getObjetivoEspecifico()!=null){
+            list.add(new ListItem("Objetivo especifico del proyecto"));
+        }
+
         subCatPart.add(list);
     }
 
@@ -200,5 +242,5 @@ public class GeneradorPdf {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
         }
-    }
+    };
 }

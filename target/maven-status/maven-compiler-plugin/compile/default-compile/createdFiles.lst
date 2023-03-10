@@ -1,5 +1,3 @@
+com\carboexco\moduloProyectos\controller\Header.class
 com\carboexco\moduloProyectos\controller\TareaController.class
 com\carboexco\moduloProyectos\entity\ProyectoPersonaId.class
-com\carboexco\moduloProyectos\repository\ProyectoPersonaRepository.class
-com\carboexco\moduloProyectos\controller\ProyectoPersonaController.class
-com\carboexco\moduloProyectos\controller\ProyectoController.class

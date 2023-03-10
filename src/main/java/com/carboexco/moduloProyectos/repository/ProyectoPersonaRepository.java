@@ -11,6 +11,6 @@ public interface ProyectoPersonaRepository extends JpaRepository<ProyectoPersona
 
     List<ProyectoPersona> findById_ProyectoAndId_Etapa(Integer proyecto, Integer etapa);
 
-    ProyectoPersona findById_Proyecto(Integer proyecto);
+    List<ProyectoPersona> findById_Proyecto(Integer proyecto);
 
 }
