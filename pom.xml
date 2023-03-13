@@ -86,6 +86,14 @@
 			<version>5.5.13.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.itextpdf.tool/xmlworker -->
+		<dependency>
+			<groupId>com.itextpdf.tool</groupId>
+			<artifactId>xmlworker</artifactId>
+			<version>5.4.1</version>
+		</dependency>
+
+
 
 	</dependencies>
 

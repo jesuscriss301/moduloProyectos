@@ -5,10 +5,7 @@ import com.carboexco.moduloProyectos.entity.ProyectoPersona;
 import com.carboexco.moduloProyectos.repository.ProyectoPersonaRepository;
 import com.carboexco.moduloProyectos.repository.ProyectoRepository;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,27 +43,24 @@ public class GeneradorPdf {
     @GetMapping("/pdf/{id}")
     public String genearPdf(@PathVariable int id) throws FileNotFoundException, DocumentException {
 
-            Optional<Proyecto> nuevo = proyectoRepository.findById(id);
+        Optional<Proyecto> nuevo = proyectoRepository.findById(id);
 
-            if (nuevo.isPresent()) {
-                this.proyecto = nuevo.get();
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(FILE));
-                Header header = new Header();
-                writer.setPageEvent(header);
-                float headerHeight = 50;
-                float contentMarginTop = 36;
-                float contentMarginBottom = 36;
-                document.setMargins(36, 36 + headerHeight, 36 + contentMarginTop, 36 + contentMarginBottom);
-                document.open();
-                addMetaData(document);
-                addTitlePage(document);
-                addContent(document);
-                document.close();
-                return "generado exitosamente";
-            } else {
-                throw new NullPointerException();
-            }
+        if (nuevo.isPresent()) {
+            this.proyecto = nuevo.get();
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(FILE));
+
+            Header header = new Header();
+            writer.setPageEvent(header);
+            document.open();
+            addMetaData(document);
+            addTitlePage(document);
+            addContent(document);
+            document.close();
+            return "generado exitosamente";
+        } else {
+            throw new NullPointerException();
+        }
 
     }
 
@@ -109,10 +103,10 @@ public class GeneradorPdf {
         document.newPage();
     }
 
-    private void addContent(Document document) throws DocumentException {
+    private Chapter primero(){
+
         Paragraph encabezado = new Paragraph();
         addEmptyLine(encabezado, 3);
-
         Anchor anchor = new Anchor("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
         anchor.setName("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
 
@@ -128,18 +122,20 @@ public class GeneradorPdf {
         createList(subCatPart);
         //Paragraph paragraph = new Paragraph();
         subCatPart.add(paragraph);
-
-        // add a table
-        createTable(subCatPart);
-
-        // now add all this to the document
-        document.add(catPart);
+        return catPart;
+    }
+    private Chapter segundo() throws BadElementException {
+        Paragraph paragraph = new Paragraph();
+        //Paragraph nuevo = new Paragraph();
+        addEmptyLine(nuevo,3);
 
         // Next section
         int n =1;
-        anchor = new Anchor("Informe de proyeto", catFont);// Subtitulo
+        Anchor anchor = new Anchor("Informe de proyeto", catFont);// Subtitulo
         anchor.setName("Informe de proyeto");
-        catPart = new Chapter(new Paragraph(anchor), n++);
+        Section nuevo =new ;
+        Chapter catPart = new Chapter();
+        catPart.add
         Paragraph preface = new Paragraph();
         addEmptyLine(preface, 1); //LINEA EN BLANCO
         ArrayList<ProyectoPersona> proyectoPersona= (ArrayList<ProyectoPersona>) proyectoPersonaRepository.findById_Proyecto(proyecto.getId());
@@ -155,6 +151,12 @@ public class GeneradorPdf {
         addEmptyLine(preface,1); //LINEA EN BLANCO
         catPart.add(preface); //AGREGAR PARRAFO AL DOCUMENTO
 
+        Paragraph subPara = new Paragraph("Información del proyecto", subFont);
+        Section subCatPart = catPart.addSection(subPara);
+
+
+
+        addEmptyLine(paragraph, 1);
         if(this.proyecto.getDescripcionProyecto()!=null){
 
             subPara = new Paragraph("Descripción del proyecto", subFont);//SUBTITULO
@@ -182,9 +184,20 @@ public class GeneradorPdf {
             subCatPart.add(new Paragraph(this.proyecto.getObjetivoEspecifico()));//INFORMACION DESCRIPCION
             subCatPart.add(paragraph);
         }
+        // add a table
+        createTable(subCatPart);
+
+        return catPart;
+    }
+
+    private void addContent(Document document) throws DocumentException {
+        Paragraph encabezado = new Paragraph();
+        addEmptyLine(encabezado, 3);
 
         // now add all this to the document
-        document.add(catPart); //AGREGAR DATOS AL DOCUMENTO
+        document.add(primero());
+        document.add(encabezado);
+        document.add(segundo()); //AGREGAR DATOS AL DOCUMENTO
     }
 
     private static void createTable(Section subCatPart)
@@ -217,7 +230,6 @@ public class GeneradorPdf {
         table.addCell("2.3");
 
         subCatPart.add(table);
-
     }
 
     private void createList(Section subCatPart) {
@@ -234,7 +246,6 @@ public class GeneradorPdf {
         if(proyecto.getObjetivoEspecifico()!=null){
             list.add(new ListItem("Objetivo especifico del proyecto"));
         }
-
         subCatPart.add(list);
     }
 
