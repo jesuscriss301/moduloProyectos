@@ -12,25 +12,29 @@ import java.util.Date;
 public class Header extends PdfPageEventHelper {
 
     public void onEndPage(PdfWriter writer, Document document) {
+        int pageNumber = writer.getPageNumber();
 
         try {
+            // Agregar tabla de encabezado en las páginas posteriores
             PdfPTable table = new PdfPTable(2);
-            Paragraph nuevo = new Paragraph("\n  \n    \n");
             table.setTotalWidth(350);
-            table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+            //table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
             Image image = Image.getInstance("c:/img/img/LOGO_CARBOEXCO.png");
             table.addCell(image);
             table.addCell("Reporte generado por: " + System.getProperty("user.name") +"\n"
                     + new Date()
             );
-            table.writeSelectedRows(-1, -1, 36, document.top() , writer.getDirectContent());
-
-
+            if (pageNumber == 1) {
+                document.setMargins(32, -1188.0f, 100, 30);
+            }else{
+                document.setMargins(32, -1188.0f, 100, 30);
+                table.writeSelectedRows(-1, -1, 30, 978.0f, writer.getDirectContent());
+            }
         } catch (BadElementException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
+
 }

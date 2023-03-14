@@ -28,7 +28,6 @@ com\carboexco\moduloProyectos\entity\Bitacora.class
 com\carboexco\moduloProyectos\repository\EtapaProyectoRepository.class
 com\carboexco\moduloProyectos\entity\Tipoproyecto.class
 com\carboexco\moduloProyectos\entity\PresupuestoPersonalId.class
-com\carboexco\moduloProyectos\controller\HtmlToPdfConverter.class
 com\carboexco\moduloProyectos\CorsConfiguration.class
 com\carboexco\moduloProyectos\entity\PresupuestoMaterialId.class
 com\carboexco\moduloProyectos\entity\Material.class
