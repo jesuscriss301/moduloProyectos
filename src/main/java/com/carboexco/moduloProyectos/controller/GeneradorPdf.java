@@ -67,9 +67,9 @@ public class GeneradorPdf {
     // iText allows to add metadata to the PDF which can be viewed in your Adobe
     // Reader
     // under File -> Properties
-    private static void addMetaData(Document document) {
+    private void addMetaData(Document document) {
         document.addTitle("Informe de proyeto");
-        document.addSubject("Informe de proyecto: "+ "NOMBRE DE PROYECTO");
+        document.addSubject("Informe de proyecto: "+ proyecto.getNombreProyecto());
         document.addKeywords("Carboexco, Informe, Modulo de proyectos");
         document.addAuthor("Carboexco");
         document.addCreator("Lars Vogel");
