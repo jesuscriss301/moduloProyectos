@@ -202,13 +202,10 @@ public class GeneradorPdf {
         catPart.add(diseno);
         addEmptyLine(paragraph, 1);
         ArrayList<Diseno> disenosAprovados = (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
-        List list = new List(true, false, 10);
-        Section subDiseno = null;
+
         for (Diseno i : disenosAprovados) {
-            subDiseno = catPart.addSection(i.getNombreDiseno());
-            PdfReader reader2 = new PdfReader(i.getId() + i.getNombreDiseno());
+            catPart.addSection(i.getNombreDiseno());
         }
-        subCatPart.add(subDiseno);
 
         return catPart;
     }
