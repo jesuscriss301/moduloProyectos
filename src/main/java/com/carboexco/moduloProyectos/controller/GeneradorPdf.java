@@ -12,9 +12,8 @@ import com.itextpdf.text.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,16 +23,16 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/generador")
 public class GeneradorPdf {
-    private static String FILE = "c:/img/img/Informeproyecto.pdf";
-    private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
+    private static final String FILE = "c:/img/img/Informeproyecto.pdf";
+    private static final Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
             Font.BOLD);
-    private static Font redFont = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+    private static final Font redFont = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.NORMAL, BaseColor.RED);
-    private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16,
+    private static final Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16,
             Font.BOLD);
-    private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+    private static final Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.BOLD);
-    private static Font small = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+    private static final Font small = new Font(Font.FontFamily.TIMES_ROMAN, 12,
             Font.NORMAL);
 
     private Proyecto proyecto;
@@ -45,7 +44,7 @@ public class GeneradorPdf {
     private DisenoRepository disenoRepository;
 
     @GetMapping("/pdf/{id}")
-    public String genearPdf(@PathVariable int id) throws FileNotFoundException, DocumentException {
+    public String genearPdf(@PathVariable int id){
 
         Optional<Proyecto> nuevo = proyectoRepository.findById(id);
         try {
@@ -69,7 +68,7 @@ public class GeneradorPdf {
         }catch (Exception e){
             e.getStackTrace();
             System.err.println(e.getMessage());
-        };
+        }
         return null;
     }
 
@@ -86,11 +85,11 @@ public class GeneradorPdf {
 
     private static void addTitlePage(Document document) throws DocumentException {
 
-        // Lets write a big header
-        Anchor anchor = new Anchor("Informe de proyecto ", catFont);
+        // Let's write a big header
+        Anchor anchor= new Anchor("Informe de proyecto ", catFont);
         anchor.setName("Informe de proyecto ");// TITULO DE LA HOJA
 
-        Chapter catPart = new Chapter(new Paragraph(anchor), 1);
+        //Chapter catPart = new Chapter(new Paragraph(anchor), 1);
         Paragraph paragraph = new Paragraph();
         addEmptyLine(paragraph, 1);
         Paragraph subPara = new Paragraph("Reporte generado por: " + System.getProperty("user.name") + ", " + new Date(), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -117,10 +116,10 @@ public class GeneradorPdf {
         document.newPage();
     }
 
-    private void addContent(Document document) throws DocumentException, IOException {
+    private void addContent(Document document) throws DocumentException{
         // now add all this to the document
         document.add(indice());
-        document.add(contenido(document)); //AGREGAR DATOS AL DOCUMENTO
+        document.add(contenido()); //AGREGAR DATOS AL DOCUMENTO
     }
 
     private Chapter indice(){
@@ -139,19 +138,19 @@ public class GeneradorPdf {
         createListConceptual(subConceptual);
         subConceptual.add(paragraph);
         //Diseño
-        Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
+        //Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
         Section subdiseno = catPart.addSection(conceptual);
         createListDiseno(subdiseno);
 
         return catPart;
     }
-    private Chapter contenido(Document document) throws BadElementException, IOException {
+    private Chapter contenido(){
         Paragraph paragraph = new Paragraph();
         // Next section
         int n = 1;
         Anchor anchor = new Anchor("Informe de proyeto", catFont);// Subtitulo
         anchor.setName("Informe de proyeto");
-        Chapter catPart = new Chapter(new Paragraph(anchor), n++);
+        Chapter catPart = new Chapter(new Paragraph(anchor), n);
         Paragraph preface = new Paragraph();
         addEmptyLine(preface, 1); //LINEA EN BLANCO
         ArrayList<ProyectoPersona> proyectoPersona = (ArrayList<ProyectoPersona>) proyectoPersonaRepository.findById_Proyecto(proyecto.getId());
@@ -206,13 +205,12 @@ public class GeneradorPdf {
         for (Diseno i : disenosAprovados) {
             catPart.addSection(i.getNombreDiseno());
         }
-
         return catPart;
     }
 
 
-
-    private static void createTable(Section subCatPart) throws BadElementException {
+    /*
+    private static void createTable(Section subCatPart){
         PdfPTable table = new PdfPTable(3);
         PdfPCell c1 = new PdfPCell(new Phrase("Table Header 1"));
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -236,7 +234,7 @@ public class GeneradorPdf {
 
         subCatPart.add(table);
     }
-
+    */
     private void createListConceptual(Section subCatPart) {
         List list = new List(true, true, 10);
         if(this.proyecto.getDescripcionProyecto()!=null){
@@ -267,5 +265,5 @@ public class GeneradorPdf {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
         }
-    };
+    }
 }
