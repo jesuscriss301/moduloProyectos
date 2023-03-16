@@ -1,11 +1,7 @@
 package com.carboexco.moduloProyectos.controller;
 
-import com.carboexco.moduloProyectos.entity.Diseno;
-import com.carboexco.moduloProyectos.entity.Proyecto;
-import com.carboexco.moduloProyectos.entity.ProyectoPersona;
-import com.carboexco.moduloProyectos.repository.DisenoRepository;
-import com.carboexco.moduloProyectos.repository.ProyectoPersonaRepository;
-import com.carboexco.moduloProyectos.repository.ProyectoRepository;
+import com.carboexco.moduloProyectos.entity.*;
+import com.carboexco.moduloProyectos.repository.*;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.List;
@@ -42,6 +38,11 @@ public class GeneradorPdf {
     private ProyectoPersonaRepository proyectoPersonaRepository;
     @Autowired
     private DisenoRepository disenoRepository;
+    @Autowired
+    private PresupuestoRepository presupuestoRepository;
+    @Autowired
+    private TareaRepository tareaRepository;
+
 
     @GetMapping("/pdf/{id}")
     public String genearPdf(@PathVariable int id){
@@ -130,17 +131,30 @@ public class GeneradorPdf {
         // Second parameter is the number of the chapter
         Chapter catPart = new Chapter(new Paragraph(anchor), 1);
         Paragraph paragraph = new Paragraph();
-        addEmptyLine(paragraph,1);
+        //addEmptyLine(paragraph,1);
 
         Paragraph conceptual = new Paragraph("Información del proyecto", subFont);
         Section subConceptual = catPart.addSection(conceptual);
-        // add a list
+
+        //Add a list
         createListConceptual(subConceptual);
         subConceptual.add(paragraph);
+
+        //Tareas
+        Paragraph tarea = new Paragraph("Tareas", subFont);
+        Section subTarea = catPart.addSection(tarea);
+        Section tareasCompletadas = subTarea.addSection("Treas completadas");
+        createListTareasCompletadas(tareasCompletadas);
+
         //Diseño
-        //Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
-        Section subdiseno = catPart.addSection(conceptual);
+        Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
+        Section subdiseno = catPart.addSection(diseno);
         createListDiseno(subdiseno);
+
+        //Presupuesto
+        Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
+        Section subpresupuesto = catPart.addSection(presupuesto);
+        createListPresupuesto(subpresupuesto);
 
         return catPart;
     }
@@ -167,44 +181,52 @@ public class GeneradorPdf {
         catPart.add(preface); //AGREGAR PARRAFO AL DOCUMENTO
 
         Paragraph subPara = new Paragraph("Información del proyecto", subFont);
-        //Section seccionConceptual = catPart.addSection(subPara);
-        catPart.add(subPara);
-        addEmptyLine(paragraph, 1);
+        Section seccionConceptual = catPart.addSection(subPara);
+        //catPart.add(subPara);
+        //addEmptyLine(paragraph, 1);
 
-        subPara = new Paragraph("Descripción del proyecto", subFont);//SUBTITULO
-        Section subCatPart = catPart.addSection(subPara);
-        subCatPart.add(new Paragraph(this.proyecto.getDescripcionProyecto())); //INFORMACION DESCRIPCION
+        subPara = new Paragraph("Descripción del proyecto:");//SUBTITULO
+        Section subCatPart = seccionConceptual.addSection(subPara);
+        subCatPart.add(new Paragraph("        " + this.proyecto.getDescripcionProyecto())); //INFORMACION DESCRIPCION
         //subCatPart.add(paragraph);
 
         if (proyecto.getJustificacion() != null) {
-            subPara = new Paragraph("Justificación del proyecto", subFont);//SUBTITULO
-            subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph(this.proyecto.getJustificacion()));//INFORMACION DESCRIPCION
+            subPara = new Paragraph("Justificación del proyecto:");//SUBTITULO
+            subCatPart = seccionConceptual.addSection(subPara);
+            subCatPart.add(new Paragraph("        " + this.proyecto.getJustificacion()));//INFORMACION DESCRIPCION
             subCatPart.add(paragraph);
         }
         if (proyecto.getObjetivoGeneral() != null) {
 
-            subPara = new Paragraph("Objetivo general del proyecto", subFont);//SUBTITULO
-            subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph(this.proyecto.getObjetivoGeneral()));//INFORMACION DESCRIPCION
+            subPara = new Paragraph("Objetivo general del proyecto:");//SUBTITULO
+            subCatPart = seccionConceptual.addSection(subPara);
+            subCatPart.add(new Paragraph("        " + this.proyecto.getObjetivoGeneral()));//INFORMACION DESCRIPCION
             subCatPart.add(paragraph);
         }
         if (proyecto.getObjetivoEspecifico() != null) {
 
-            subPara = new Paragraph("Objetivo especifico del proyecto", subFont);//SUBTITULO
-            subCatPart = catPart.addSection(subPara);
-            subCatPart.add(new Paragraph(this.proyecto.getObjetivoEspecifico()));//INFORMACION DESCRIPCION
+            subPara = new Paragraph("Objetivo especifico del proyecto:");//SUBTITULO
+            subCatPart = seccionConceptual.addSection(subPara);
+            subCatPart.add(new Paragraph("        " + this.proyecto.getObjetivoEspecifico()));//INFORMACION DESCRIPCION
             subCatPart.add(paragraph);
         }
-        Paragraph diseno = new Paragraph("Diseño", subFont);
-        //Section subDiseno = catPart.addSection(diseno);
-        catPart.add(diseno);
-        addEmptyLine(paragraph, 1);
-        ArrayList<Diseno> disenosAprovados = (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
 
-        for (Diseno i : disenosAprovados) {
-            catPart.addSection(i.getNombreDiseno());
-        }
+        //Tareas
+        Paragraph tarea = new Paragraph("Tareas", subFont);
+        Section subTarea = catPart.addSection(tarea);
+        Section tareasCompletadas = subTarea.addSection("Treas completadas: ");
+        createListTareasCompletadas(tareasCompletadas);
+
+        //Diseño
+        Paragraph diseno = new Paragraph("Diseño", subFont);
+        Section subDiseno = catPart.addSection(diseno);
+        this.createListDiseno(subDiseno);
+
+        //Presupuesto
+        Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
+        Section subProyecto = catPart.addSection(presupuesto);
+        this.createListPresupuesto(subProyecto);
+
         return catPart;
     }
 
@@ -236,29 +258,42 @@ public class GeneradorPdf {
     }
     */
     private void createListConceptual(Section subCatPart) {
-        List list = new List(true, true, 10);
+
         if(this.proyecto.getDescripcionProyecto()!=null){
-            list.add(new ListItem("Descripción del proyecto"));
+            subCatPart.addSection(new ListItem("Descripción del proyecto"));
         }
         if(proyecto.getJustificacion()!=null){
-            list.add(new ListItem("Justificación del proyecto"));
+            subCatPart.addSection(new ListItem("Justificación del proyecto"));
         }
         if(proyecto.getObjetivoGeneral()!=null){
-            list.add(new ListItem("Objetivo general del proyecto"));
+            subCatPart.addSection(new ListItem("Objetivo general del proyecto"));
         }
         if(proyecto.getObjetivoEspecifico()!=null){
-            list.add(new ListItem("Objetivo especifico del proyecto"));
+            subCatPart.addSection(new ListItem("Objetivo especifico del proyecto"));
         }
-        subCatPart.add(list);
+    }
+
+    private void createListTareasCompletadas(Section subCatPart) {
+        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
+            subCatPart.addSection(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
+                    +i.getFechaFinalReal()+"): \n"+i.getDescripcionTarea()));
+        }
+        //subCatPart.add(list);
     }
 
     private void createListDiseno(Section subCatPart) {
         ArrayList<Diseno> disenosAprovados= (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        List list = new List(true, true, 10);
         for (Diseno i: disenosAprovados) {
-            list.add(new ListItem(i.getNombreDiseno()));
+            subCatPart.addSection(new ListItem(i.getNombreDiseno()));
         }
-        subCatPart.add(list);
+    }
+
+    private void createListPresupuesto(Section subProyecto) {
+        ArrayList<Presupuesto> presupuestoAprovados= (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
+        for (Presupuesto i: presupuestoAprovados) {
+            subProyecto.addSection(new ListItem("IdPresupuesto: #"+i.getId()+" ($"+i.getCostoTotal()+")"));
+        }
     }
 
     private static void addEmptyLine(Paragraph paragraph, int number) {

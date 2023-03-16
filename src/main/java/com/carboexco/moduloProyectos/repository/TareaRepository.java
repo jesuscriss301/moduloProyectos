@@ -11,9 +11,9 @@ import java.util.List;
 public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     List<Tarea> findByidEtapaProyecto(EtapaProyecto Id);
 
-    List<Tarea> findByIdEtapaProyecto_IdProyecto_IdAndIdEtapaProyecto_IdEtapa_Id(Integer id, Integer id1);
+    List<Tarea> findByIdEtapaProyecto_IdProyecto_IdAndIdEtapaProyecto_IdEtapa_Id(Integer idProyecto, Integer idEtapa);
 
-    List<Tarea> findByIdEtapaProyecto_IdProyecto_Id(Integer id);
+    List<Tarea> findByIdEtapaProyecto_IdProyecto_Id(Integer idProyecto);
 
 
 }
