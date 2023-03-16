@@ -141,10 +141,15 @@ public class GeneradorPdf {
         subConceptual.add(paragraph);
 
         //Tareas
-        Paragraph tarea = new Paragraph("Tareas", subFont);
+        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        Paragraph tarea = new Paragraph("Tareas " + listTareasProyecto.size(), subFont);
         Section subTarea = catPart.addSection(tarea);
-        Section tareasCompletadas = subTarea.addSection("Treas completadas");
-        createListTareasCompletadas(tareasCompletadas);
+        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasCompletadas(listTareasProyecto,tareasCompletadas,true);
+        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasEnEjecucion(listTareasProyecto,tareasEjecucion,true);
+        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasEnEspera(listTareasProyecto,tareasEspera,true);
 
         //Diseño
         Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
@@ -212,10 +217,15 @@ public class GeneradorPdf {
         }
 
         //Tareas
-        Paragraph tarea = new Paragraph("Tareas", subFont);
+        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        Paragraph tarea = new Paragraph("Tareas " + listTareasProyecto.size(), subFont);
         Section subTarea = catPart.addSection(tarea);
-        Section tareasCompletadas = subTarea.addSection("Treas completadas: ");
-        createListTareasCompletadas(tareasCompletadas);
+        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasCompletadas(listTareasProyecto,tareasCompletadas,false);
+        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasEnEjecucion(listTareasProyecto,tareasEjecucion,false);
+        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
+        createListTareasEnEspera(listTareasProyecto,tareasEspera,false);
 
         //Diseño
         Paragraph diseno = new Paragraph("Diseño", subFont);
@@ -273,13 +283,58 @@ public class GeneradorPdf {
         }
     }
 
-    private void createListTareasCompletadas(Section subCatPart) {
-        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
-        for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
-            subCatPart.addSection(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
-                    +i.getFechaFinalReal()+"): \n"+i.getDescripcionTarea()));
+    private void createListTareasEnEspera(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+        List list = new List(false, true,20);
+        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        if (!indice){
+            for (Tarea i: TareaController.getTareasEnEspera(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
+                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
+                        "\n"+i.getDescripcionTarea()));
+            }
+        }else{
+            for (Tarea i: TareaController.getTareasEnEspera(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()));
+            }
         }
-        //subCatPart.add(list);
+
+        subCatPart.add(list);
+    }
+
+    private void createListTareasCompletadas(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+        List list = new List(false, true,20);
+        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        if (!indice){
+            for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
+                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
+                        "\n"+i.getDescripcionTarea()));
+            }
+        }else{
+            for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()));
+            }
+        }
+
+        subCatPart.add(list);
+    }
+
+    private void createListTareasEnEjecucion(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+        List list = new List(false, true,20);
+        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        if (!indice){
+            for (Tarea i: TareaController.getTareasEnEjecucion(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
+                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
+                        "\n"+i.getDescripcionTarea()));
+            }
+        }else{
+            for (Tarea i: TareaController.getTareasEnEjecucion(listTareasProyecto)) {
+                list.add(new ListItem(i.getNombreTarea()));
+            }
+        }
+
+        subCatPart.add(list);
     }
 
     private void createListDiseno(Section subCatPart) {
