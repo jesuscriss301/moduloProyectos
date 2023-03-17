@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,7 +44,6 @@ public class GeneradorPdf {
     @Autowired
     private TareaRepository tareaRepository;
 
-
     @GetMapping("/pdf/{id}")
     public String genearPdf(@PathVariable int id){
 
@@ -61,6 +61,7 @@ public class GeneradorPdf {
                 addMetaData(document);
                 addTitlePage(document);
                 addContent(document);
+                addConcatenar(document,writer);
                 document.close();
                 return "generado exitosamente";
             } else {
@@ -71,6 +72,19 @@ public class GeneradorPdf {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    public void addConcatenar(Document document,PdfWriter writer) throws IOException {
+
+        PdfReader reader = new PdfReader("documento_existente.pdf");
+        int numPages = reader.getNumberOfPages();
+
+        for (int j = 1; j <= numPages; j++) {
+            PdfImportedPage page = writer.getImportedPage(reader, j);
+            document.newPage();
+            writer.getDirectContent().addTemplate(page, 0, 0);
+        }
+
     }
 
     // iText allows to add metadata to the PDF which can be viewed in your Adobe
@@ -117,13 +131,13 @@ public class GeneradorPdf {
         document.newPage();
     }
 
-    private void addContent(Document document) throws DocumentException{
+    private void addContent(Document document) throws DocumentException, IOException {
         // now add all this to the document
         document.add(indice());
         document.add(contenido()); //AGREGAR DATOS AL DOCUMENTO
     }
 
-    private Chapter indice(){
+    private Chapter indice() throws DocumentException {
 
         Anchor anchor = new Anchor("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
         anchor.setName("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
@@ -163,7 +177,8 @@ public class GeneradorPdf {
 
         return catPart;
     }
-    private Chapter contenido(){
+
+    private Chapter contenido() throws DocumentException, IOException {
         Paragraph paragraph = new Paragraph();
         // Next section
         int n = 1;
@@ -187,8 +202,6 @@ public class GeneradorPdf {
 
         Paragraph subPara = new Paragraph("Información del proyecto", subFont);
         Section seccionConceptual = catPart.addSection(subPara);
-        //catPart.add(subPara);
-        //addEmptyLine(paragraph, 1);
 
         subPara = new Paragraph("Descripción del proyecto:");//SUBTITULO
         Section subCatPart = seccionConceptual.addSection(subPara);
@@ -230,7 +243,11 @@ public class GeneradorPdf {
         //Diseño
         Paragraph diseno = new Paragraph("Diseño", subFont);
         Section subDiseno = catPart.addSection(diseno);
-        this.createListDiseno(subDiseno);
+        //this.createListDiseno(subDiseno);
+        ArrayList<Diseno> disenosAprovados= (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
+        for (Diseno i: disenosAprovados) {
+            subDiseno.addSection(new ListItem(i.getNombreDiseno()));
+        }
 
         //Presupuesto
         Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
@@ -240,33 +257,48 @@ public class GeneradorPdf {
         return catPart;
     }
 
+    private static void createTable(Section subCatPart, ArrayList<Tarea>listTareasProyecto) throws DocumentException {
 
-    /*
-    private static void createTable(Section subCatPart){
-        PdfPTable table = new PdfPTable(3);
-        PdfPCell c1 = new PdfPCell(new Phrase("Table Header 1"));
+        subCatPart.add(new Paragraph("  "));
+
+        PdfPTable table = new PdfPTable(4);
+        float[] columnWidths = {50f, 100f, 50f, 100f};
+        table.setWidths(columnWidths);
+        //table.setTotalWidth(PageSize.A4.getWidth() * 0.8f);
+        PdfPCell c1 = new PdfPCell(new Phrase("Nombre Tarea"));
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(c1);
 
-        c1 = new PdfPCell(new Phrase("Table Header 2"));
+        c1 = new PdfPCell(new Phrase("Fecha de inicio \n Fecha de termino"));
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(c1);
 
-        c1 = new PdfPCell(new Phrase("Table Header 3"));
+        c1 = new PdfPCell(new Phrase("Etapa"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Descripcion Tarea"));
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(c1);
         table.setHeaderRows(1);
+        for (Tarea i: listTareasProyecto) {
 
-        table.addCell("1.0");
-        table.addCell("1.1");
-        table.addCell("1.2");
-        table.addCell("2.1");
-        table.addCell("2.2");
-        table.addCell("2.3");
-
+            table.addCell(i.getNombreTarea());
+            if (i.getFechaFinalReal()==null&&i.getFechaInicioReal()!=null){
+                table.addCell(i.getFechaInicioReal()+"\n"+"En ejecución");
+            } else if (i.getFechaFinalReal()==null&&i.getFechaInicioReal()==null) {
+                table.addCell("(fechas programadas) \n"+i.getFechaInicio()+"\n"+i.getFechaFinal());
+            }else {
+                table.addCell(i.getFechaInicioReal()+"\n"+i.getFechaFinalReal());
+            }
+            table.addCell( i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa());
+            table.addCell(i.getDescripcionTarea());
+        }
+        //subCatPart.setIndentationRight(200);
         subCatPart.add(table);
+        subCatPart.setIndentation(-36f);
     }
-    */
+
     private void createListConceptual(Section subCatPart) {
 
         if(this.proyecto.getDescripcionProyecto()!=null){
@@ -283,17 +315,13 @@ public class GeneradorPdf {
         }
     }
 
-    private void createListTareasEnEspera(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+    private void createListTareasEnEspera(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
         List list = new List(false, true,20);
-        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.getTareasEnEspera(listTareasProyecto);
         if (!indice){
-            for (Tarea i: TareaController.getTareasEnEspera(listTareasProyecto)) {
-                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
-                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
-                        "\n"+i.getDescripcionTarea()));
-            }
+            createTable(subCatPart, listTareasProyecto1);
         }else{
-            for (Tarea i: TareaController.getTareasEnEspera(listTareasProyecto)) {
+            for (Tarea i: listTareasProyecto1) {
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
@@ -301,35 +329,26 @@ public class GeneradorPdf {
         subCatPart.add(list);
     }
 
-    private void createListTareasCompletadas(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+    private void createListTareasCompletadas(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
         List list = new List(false, true,20);
-        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.gettareasTerminadas(listTareasProyecto);
         if (!indice){
-            for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
-                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
-                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
-                        "\n"+i.getDescripcionTarea()));
-            }
+            createTable(subCatPart, listTareasProyecto1);
         }else{
-            for (Tarea i: TareaController.gettareasTerminadas(listTareasProyecto)) {
+            for (Tarea i: listTareasProyecto1) {
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
-
         subCatPart.add(list);
     }
 
-    private void createListTareasEnEjecucion(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) {
+    private void createListTareasEnEjecucion(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
         List list = new List(false, true,20);
-        //ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.getTareasEnEjecucion(listTareasProyecto);
         if (!indice){
-            for (Tarea i: TareaController.getTareasEnEjecucion(listTareasProyecto)) {
-                list.add(new ListItem(i.getNombreTarea()+"("+i.getFechaInicioReal()+"/"
-                        +i.getFechaFinalReal()+"): Etapa de "+ i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa() +
-                        "\n"+i.getDescripcionTarea()));
-            }
+            createTable(subCatPart, listTareasProyecto1);
         }else{
-            for (Tarea i: TareaController.getTareasEnEjecucion(listTareasProyecto)) {
+            for (Tarea i: listTareasProyecto1 ){
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
