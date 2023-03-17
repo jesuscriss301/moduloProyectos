@@ -8,9 +8,10 @@ import com.itextpdf.text.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class GeneradorPdf {
                 addMetaData(document);
                 addTitlePage(document);
                 addContent(document);
-                addConcatenar(document,writer);
+                addConcatenarDiseno(document,writer);
                 document.close();
                 return "generado exitosamente";
             } else {
@@ -74,17 +75,20 @@ public class GeneradorPdf {
         return null;
     }
 
-    public void addConcatenar(Document document,PdfWriter writer) throws IOException {
+    public void addConcatenarDiseno(Document document,PdfWriter writer,String direccion) throws IOException {
+        ArrayList<Diseno> disenos=(ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
+        for (Diseno i : disenos){
 
-        PdfReader reader = new PdfReader("documento_existente.pdf");
-        int numPages = reader.getNumberOfPages();
+            PdfReader reader = new PdfReader("documento_existente.pdf");
 
-        for (int j = 1; j <= numPages; j++) {
-            PdfImportedPage page = writer.getImportedPage(reader, j);
-            document.newPage();
-            writer.getDirectContent().addTemplate(page, 0, 0);
+            int numPages = reader.getNumberOfPages();
+
+            for (int j = 1; j <= numPages; j++) {
+                PdfImportedPage page = writer.getImportedPage(reader, j);
+                document.newPage();
+                writer.getDirectContent().addTemplate(page, 0, 0);
+            }
         }
-
     }
 
     // iText allows to add metadata to the PDF which can be viewed in your Adobe
