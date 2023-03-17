@@ -9,8 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -70,6 +72,7 @@ public class GeneradorPdf {
                 addTitlePage(document);
                 addContent(document);
                 document.close();
+                concatenarpdf();
                 return "generado exitosamente";
             } else {
                 throw new NullPointerException();
@@ -431,6 +434,38 @@ public class GeneradorPdf {
     private static void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
+        }
+    }
+
+    private void concatenarpdf(){
+
+        try {
+            for (int i:concatenar) {
+
+            // URL del recurso a consultar
+            URL url = new URL("http://localhost:8081/data/files/direccion/"+i);
+
+            // Abrimos la conexión con la API REST
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            // Establecemos el método HTTP a utilizar (GET, POST, PUT, DELETE, etc.)
+            con.setRequestMethod("GET");
+
+            // Leemos la respuesta de la API REST
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String linea;
+            StringBuilder respuesta = new StringBuilder();
+            while ((linea = in.readLine()) != null) {
+                respuesta.append(linea);
+            }
+            in.close();
+
+            
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
