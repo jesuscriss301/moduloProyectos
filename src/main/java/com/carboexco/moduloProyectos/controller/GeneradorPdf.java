@@ -440,29 +440,45 @@ public class GeneradorPdf {
     private void concatenarpdf(){
 
         try {
+            String []rta=new String[concatenar.size()+1];
+            rta[0]=FILE;
             for (int i:concatenar) {
-
             // URL del recurso a consultar
             URL url = new URL("http://localhost:8081/data/files/direccion/"+i);
-
             // Abrimos la conexión con la API REST
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
             // Establecemos el método HTTP a utilizar (GET, POST, PUT, DELETE, etc.)
             con.setRequestMethod("GET");
-
             // Leemos la respuesta de la API REST
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String linea;
-            StringBuilder respuesta = new StringBuilder();
+                StringBuilder respuesta = new StringBuilder();
             while ((linea = in.readLine()) != null) {
                 respuesta.append(linea);
             }
             in.close();
-
-            
-
             }
+
+            // Creamos un objeto Document y un objeto PdfCopy
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, new FileOutputStream("c:/img/img/archivo_resultante.pdf"));
+
+            document.open();
+
+            // Recorremos cada archivo PDF y agregamos sus páginas al objeto PdfCopy
+            for (String archivo : rta) {
+                PdfReader reader = new PdfReader(archivo);
+                int numPaginas = reader.getNumberOfPages();
+                for (int pagina = 1; pagina <= numPaginas; pagina++) {
+                    PdfImportedPage page = copy.getImportedPage(reader, pagina);
+                    copy.addPage(page);
+                }
+                reader.close();
+            }
+
+            // Cerramos el objeto Document y el objeto PdfCopy
+            document.close();
+            copy.close();
 
         } catch (Exception e) {
             e.printStackTrace();
