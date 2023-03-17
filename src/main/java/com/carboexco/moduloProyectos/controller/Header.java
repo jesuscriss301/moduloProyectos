@@ -25,9 +25,9 @@ public class Header extends PdfPageEventHelper {
                     + new Date()
             );
             if (pageNumber == 1) {
-                document.setMargins(32, -1188.0f, 100, 30);
+                document.setMargins(32, 0, 100, 30);
             }else{
-                document.setMargins(32, -1188.0f, 100, 30);
+                document.setMargins(32, 0, 100, 30);
                 table.writeSelectedRows(-1, -1, 30, 978.0f, writer.getDirectContent());
             }
         } catch (BadElementException e) {
