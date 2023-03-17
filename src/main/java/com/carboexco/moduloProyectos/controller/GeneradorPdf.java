@@ -5,6 +5,7 @@ import com.carboexco.moduloProyectos.repository.*;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.List;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,12 @@ public class GeneradorPdf {
     @Autowired
     private TareaRepository tareaRepository;
 
+    private ArrayList<Integer> concatenar;
+    @Autowired
+    private PresupuestoMaterialRepository presupuestoMaterialRepository;
+    @Autowired
+    private TareaPersonaRepository tareaPersonaRepository;
+
     @GetMapping("/pdf/{id}")
     public String genearPdf(@PathVariable int id){
 
@@ -62,7 +69,6 @@ public class GeneradorPdf {
                 addMetaData(document);
                 addTitlePage(document);
                 addContent(document);
-                addConcatenarDiseno(document,writer);
                 document.close();
                 return "generado exitosamente";
             } else {
@@ -94,7 +100,7 @@ public class GeneradorPdf {
     // iText allows to add metadata to the PDF which can be viewed in your Adobe
     // Reader
     // under File -> Properties
-    private void addMetaData(Document document) {
+    private void addMetaData(@NotNull Document document) {
         document.addTitle("Informe de proyeto");
         document.addSubject("Informe de proyecto: "+ proyecto.getNombreProyecto());
         document.addKeywords("Carboexco, Informe, Modulo de proyectos");
@@ -102,7 +108,7 @@ public class GeneradorPdf {
         document.addCreator("Departamento de sistemas Carboexco");
     }
 
-    private static void addTitlePage(Document document) throws DocumentException {
+    private static void addTitlePage(@NotNull Document document) throws DocumentException {
 
         // Let's write a big header
         Anchor anchor= new Anchor("Informe de proyecto ", catFont);
@@ -135,13 +141,13 @@ public class GeneradorPdf {
         document.newPage();
     }
 
-    private void addContent(Document document) throws DocumentException, IOException {
+    private void addContent(@NotNull Document document) throws DocumentException, IOException {
         // now add all this to the document
         document.add(indice());
         document.add(contenido()); //AGREGAR DATOS AL DOCUMENTO
     }
 
-    private Chapter indice() throws DocumentException {
+    private @NotNull Chapter indice() throws DocumentException {
 
         Anchor anchor = new Anchor("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
         anchor.setName("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
@@ -169,20 +175,20 @@ public class GeneradorPdf {
         Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
         createListTareasEnEspera(listTareasProyecto,tareasEspera,true);
 
-        //Diseño
-        Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
-        Section subdiseno = catPart.addSection(diseno);
-        createListDiseno(subdiseno);
-
         //Presupuesto
         Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
         Section subpresupuesto = catPart.addSection(presupuesto);
         createListPresupuesto(subpresupuesto);
 
+        //Diseño
+        Paragraph diseno = new Paragraph("Diseño del proyecto", subFont);
+        Section subdiseno = catPart.addSection(diseno);
+        createListDiseno(subdiseno);
+
         return catPart;
     }
 
-    private Chapter contenido() throws DocumentException, IOException {
+    private @NotNull Chapter contenido() throws DocumentException, IOException {
         Paragraph paragraph = new Paragraph();
         // Next section
         int n = 1;
@@ -244,6 +250,16 @@ public class GeneradorPdf {
         Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
         createListTareasEnEspera(listTareasProyecto,tareasEspera,false);
 
+        //Presupuesto
+        Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
+        Section subProyecto = catPart.addSection(presupuesto);
+        ArrayList<Presupuesto> presupuestoAprovados= (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
+        for (Presupuesto i: presupuestoAprovados) {
+            Section material= subProyecto.addSection(new ListItem("IdPresupuesto: #"+i.getId()+" ($"+i.getCostoTotal()+")"));
+            ArrayList<PresupuestoMaterial> materials=(ArrayList<PresupuestoMaterial>) presupuestoMaterialRepository.findByIdPresupuesto_Id(i.getId());
+            createTableMaterials(material,materials);
+        }
+
         //Diseño
         Paragraph diseno = new Paragraph("Diseño", subFont);
         Section subDiseno = catPart.addSection(diseno);
@@ -251,17 +267,55 @@ public class GeneradorPdf {
         ArrayList<Diseno> disenosAprovados= (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
         for (Diseno i: disenosAprovados) {
             subDiseno.addSection(new ListItem(i.getNombreDiseno()));
+            this.concatenar=new ArrayList<>();
+            this.concatenar.add(i.getIdFoto());
         }
-
-        //Presupuesto
-        Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
-        Section subProyecto = catPart.addSection(presupuesto);
-        this.createListPresupuesto(subProyecto);
 
         return catPart;
     }
 
-    private static void createTable(Section subCatPart, ArrayList<Tarea>listTareasProyecto) throws DocumentException {
+    public void createTableMaterials(@NotNull Section subCatPart, @NotNull ArrayList<PresupuestoMaterial>listTareasProyecto) throws DocumentException {
+
+        subCatPart.add(new Paragraph("  "));
+
+        PdfPTable table = new PdfPTable(5);
+        float[] columnWidths = {50f, 50f, 50f, 50f, 50f};
+        table.setWidths(columnWidths);
+        //table.setTotalWidth(PageSize.A4.getWidth() * 0.8f);
+        PdfPCell c1 = new PdfPCell(new Phrase("Tipo"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Nombre del Material"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Cantidad"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Costo"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Tiempo de uso"));
+        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(c1);
+        table.setHeaderRows(1);
+        for (PresupuestoMaterial i: listTareasProyecto) {
+
+            table.addCell(i.getIdMaterial().getTipoMaterial());
+            table.addCell(i.getIdMaterial().getIdProducto()+"");
+            table.addCell(i.getCosto()+"");
+            table.addCell( i.getCantidad()+"");
+            table.addCell(i.getTiempoUso()+"");
+        }
+        //subCatPart.setIndentationRight(200);
+        subCatPart.add(table);
+        subCatPart.setIndentation(-36f);
+    }
+
+    private static void createTable(@NotNull Section subCatPart, @NotNull ArrayList<Tarea>listTareasProyecto) throws DocumentException {
 
         subCatPart.add(new Paragraph("  "));
 
