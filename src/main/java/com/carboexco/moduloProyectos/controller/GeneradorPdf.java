@@ -9,11 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedReader;
+import java.io.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class GeneradorPdf {
     private TareaPersonaRepository tareaPersonaRepository;
 
     @GetMapping("/pdf/{id}")
-    public String genearPdf(@PathVariable int id){
+    public String genearPdf(@PathVariable int id) {
 
         Optional<Proyecto> nuevo = proyectoRepository.findById(id);
         try {
@@ -77,16 +78,16 @@ public class GeneradorPdf {
             } else {
                 throw new NullPointerException();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
             System.err.println(e.getMessage());
         }
         return null;
     }
 
-    public void addConcatenarDiseno(Document document,PdfWriter writer,String direccion) throws IOException {
-        ArrayList<Diseno> disenos=(ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        for (Diseno i : disenos){
+    public void addConcatenarDiseno(Document document, PdfWriter writer, String direccion) throws IOException {
+        ArrayList<Diseno> disenos = (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
+        for (Diseno i : disenos) {
 
             PdfReader reader = new PdfReader("documento_existente.pdf");
 
@@ -105,7 +106,7 @@ public class GeneradorPdf {
     // under File -> Properties
     private void addMetaData(@NotNull Document document) {
         document.addTitle("Informe de proyeto");
-        document.addSubject("Informe de proyecto: "+ proyecto.getNombreProyecto());
+        document.addSubject("Informe de proyecto: " + proyecto.getNombreProyecto());
         document.addKeywords("Carboexco, Informe, Modulo de proyectos");
         document.addAuthor("Carboexco");
         document.addCreator("Departamento de sistemas Carboexco");
@@ -114,7 +115,7 @@ public class GeneradorPdf {
     private static void addTitlePage(@NotNull Document document) throws DocumentException {
 
         // Let's write a big header
-        Anchor anchor= new Anchor("Informe de proyecto ", catFont);
+        Anchor anchor = new Anchor("Informe de proyecto ", catFont);
         anchor.setName("Informe de proyecto ");// TITULO DE LA HOJA
 
         //Chapter catPart = new Chapter(new Paragraph(anchor), 1);
@@ -152,8 +153,8 @@ public class GeneradorPdf {
 
     private @NotNull Chapter indice() throws DocumentException {
 
-        Anchor anchor = new Anchor("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto(), catFont);
-        anchor.setName("Indicé informe de proyecto "+ this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
+        Anchor anchor = new Anchor("Indicé informe de proyecto " + this.proyecto.getNombreProyecto(), catFont);
+        anchor.setName("Indicé informe de proyecto " + this.proyecto.getNombreProyecto());// TITULO DE LA HOJA
 
         // Second parameter is the number of the chapter
         Chapter catPart = new Chapter(new Paragraph(anchor), 1);
@@ -168,15 +169,15 @@ public class GeneradorPdf {
         subConceptual.add(paragraph);
 
         //Tareas
-        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        ArrayList<Tarea> listTareasProyecto = (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
         Paragraph tarea = new Paragraph("Tareas " + listTareasProyecto.size(), subFont);
         Section subTarea = catPart.addSection(tarea);
-        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasCompletadas(listTareasProyecto,tareasCompletadas,true);
-        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasEnEjecucion(listTareasProyecto,tareasEjecucion,true);
-        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasEnEspera(listTareasProyecto,tareasEspera,true);
+        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasCompletadas(listTareasProyecto, tareasCompletadas, true);
+        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasEnEjecucion(listTareasProyecto, tareasEjecucion, true);
+        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasEnEspera(listTareasProyecto, tareasEspera, true);
 
         //Presupuesto
         Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
@@ -243,41 +244,41 @@ public class GeneradorPdf {
         }
 
         //Tareas
-        ArrayList<Tarea> listTareasProyecto= (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
+        ArrayList<Tarea> listTareasProyecto = (ArrayList<Tarea>) tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(proyecto.getId());
         Paragraph tarea = new Paragraph("Tareas " + listTareasProyecto.size(), subFont);
         Section subTarea = catPart.addSection(tarea);
-        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasCompletadas(listTareasProyecto,tareasCompletadas,false);
-        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasEnEjecucion(listTareasProyecto,tareasEjecucion,false);
-        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size()+"/"+listTareasProyecto.size());
-        createListTareasEnEspera(listTareasProyecto,tareasEspera,false);
+        Section tareasCompletadas = subTarea.addSection("Tareas completadas: " + TareaController.gettareasTerminadas(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasCompletadas(listTareasProyecto, tareasCompletadas, false);
+        Section tareasEjecucion = subTarea.addSection("Tareas en ejecución: " + TareaController.getTareasEnEjecucion(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasEnEjecucion(listTareasProyecto, tareasEjecucion, false);
+        Section tareasEspera = subTarea.addSection("Tareas en espera: " + TareaController.getTareasEnEspera(listTareasProyecto).size() + "/" + listTareasProyecto.size());
+        createListTareasEnEspera(listTareasProyecto, tareasEspera, false);
 
         //Presupuesto
         Paragraph presupuesto = new Paragraph("Presupuestos del proyecto", subFont);
         Section subProyecto = catPart.addSection(presupuesto);
-        ArrayList<Presupuesto> presupuestoAprovados= (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        for (Presupuesto i: presupuestoAprovados) {
-            Section material= subProyecto.addSection(new ListItem("IdPresupuesto: #"+i.getId()+" ($"+i.getCostoTotal()+")"));
-            ArrayList<PresupuestoMaterial> materials=(ArrayList<PresupuestoMaterial>) presupuestoMaterialRepository.findByIdPresupuesto_Id(i.getId());
-            createTableMaterials(material,materials);
+        ArrayList<Presupuesto> presupuestoAprovados = (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
+        for (Presupuesto i : presupuestoAprovados) {
+            Section material = subProyecto.addSection(new ListItem("IdPresupuesto: #" + i.getId() + " ($" + i.getCostoTotal() + ")"));
+            ArrayList<PresupuestoMaterial> materials = (ArrayList<PresupuestoMaterial>) presupuestoMaterialRepository.findByIdPresupuesto_Id(i.getId());
+            createTableMaterials(material, materials);
         }
 
         //Diseño
         Paragraph diseno = new Paragraph("Diseño", subFont);
         Section subDiseno = catPart.addSection(diseno);
         //this.createListDiseno(subDiseno);
-        ArrayList<Diseno> disenosAprovados= (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        for (Diseno i: disenosAprovados) {
+        ArrayList<Diseno> disenosAprovados = (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
+        for (Diseno i : disenosAprovados) {
             subDiseno.addSection(new ListItem(i.getNombreDiseno()));
-            this.concatenar=new ArrayList<>();
+            this.concatenar = new ArrayList<>();
             this.concatenar.add(i.getIdFoto());
         }
 
         return catPart;
     }
 
-    public void createTableMaterials(@NotNull Section subCatPart, @NotNull ArrayList<PresupuestoMaterial>listTareasProyecto) throws DocumentException {
+    public void createTableMaterials(@NotNull Section subCatPart, @NotNull ArrayList<PresupuestoMaterial> listTareasProyecto) throws DocumentException {
 
         subCatPart.add(new Paragraph("  "));
 
@@ -305,20 +306,20 @@ public class GeneradorPdf {
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(c1);
         table.setHeaderRows(1);
-        for (PresupuestoMaterial i: listTareasProyecto) {
+        for (PresupuestoMaterial i : listTareasProyecto) {
 
             table.addCell(i.getIdMaterial().getTipoMaterial());
-            table.addCell(i.getIdMaterial().getIdProducto()+"");
-            table.addCell(i.getCosto()+"");
-            table.addCell( i.getCantidad()+"");
-            table.addCell(i.getTiempoUso()+"");
+            table.addCell(i.getIdMaterial().getIdProducto() + "");
+            table.addCell(i.getCosto() + "");
+            table.addCell(i.getCantidad() + "");
+            table.addCell(i.getTiempoUso() + "");
         }
         //subCatPart.setIndentationRight(200);
         subCatPart.add(table);
         subCatPart.setIndentation(-36f);
     }
 
-    private static void createTable(@NotNull Section subCatPart, @NotNull ArrayList<Tarea>listTareasProyecto) throws DocumentException {
+    private static void createTable(@NotNull Section subCatPart, @NotNull ArrayList<Tarea> listTareasProyecto) throws DocumentException {
 
         subCatPart.add(new Paragraph("  "));
 
@@ -342,17 +343,17 @@ public class GeneradorPdf {
         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(c1);
         table.setHeaderRows(1);
-        for (Tarea i: listTareasProyecto) {
+        for (Tarea i : listTareasProyecto) {
 
             table.addCell(i.getNombreTarea());
-            if (i.getFechaFinalReal()==null&&i.getFechaInicioReal()!=null){
-                table.addCell(i.getFechaInicioReal()+"\n"+"En ejecución");
-            } else if (i.getFechaFinalReal()==null&&i.getFechaInicioReal()==null) {
-                table.addCell("(fechas programadas) \n"+i.getFechaInicio()+"\n"+i.getFechaFinal());
-            }else {
-                table.addCell(i.getFechaInicioReal()+"\n"+i.getFechaFinalReal());
+            if (i.getFechaFinalReal() == null && i.getFechaInicioReal() != null) {
+                table.addCell(i.getFechaInicioReal() + "\n" + "En ejecución");
+            } else if (i.getFechaFinalReal() == null && i.getFechaInicioReal() == null) {
+                table.addCell("(fechas programadas) \n" + i.getFechaInicio() + "\n" + i.getFechaFinal());
+            } else {
+                table.addCell(i.getFechaInicioReal() + "\n" + i.getFechaFinalReal());
             }
-            table.addCell( i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa());
+            table.addCell(i.getIdEtapaProyecto().getIdEtapa().getNombreEtapa());
             table.addCell(i.getDescripcionTarea());
         }
         //subCatPart.setIndentationRight(200);
@@ -362,27 +363,27 @@ public class GeneradorPdf {
 
     private void createListConceptual(Section subCatPart) {
 
-        if(this.proyecto.getDescripcionProyecto()!=null){
+        if (this.proyecto.getDescripcionProyecto() != null) {
             subCatPart.addSection(new ListItem("Descripción del proyecto"));
         }
-        if(proyecto.getJustificacion()!=null){
+        if (proyecto.getJustificacion() != null) {
             subCatPart.addSection(new ListItem("Justificación del proyecto"));
         }
-        if(proyecto.getObjetivoGeneral()!=null){
+        if (proyecto.getObjetivoGeneral() != null) {
             subCatPart.addSection(new ListItem("Objetivo general del proyecto"));
         }
-        if(proyecto.getObjetivoEspecifico()!=null){
+        if (proyecto.getObjetivoEspecifico() != null) {
             subCatPart.addSection(new ListItem("Objetivo especifico del proyecto"));
         }
     }
 
-    private void createListTareasEnEspera(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
-        List list = new List(false, true,20);
-        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.getTareasEnEspera(listTareasProyecto);
-        if (!indice){
+    private void createListTareasEnEspera(ArrayList<Tarea> listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
+        List list = new List(false, true, 20);
+        ArrayList<Tarea> listTareasProyecto1 = (ArrayList<Tarea>) TareaController.getTareasEnEspera(listTareasProyecto);
+        if (!indice) {
             createTable(subCatPart, listTareasProyecto1);
-        }else{
-            for (Tarea i: listTareasProyecto1) {
+        } else {
+            for (Tarea i : listTareasProyecto1) {
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
@@ -390,26 +391,26 @@ public class GeneradorPdf {
         subCatPart.add(list);
     }
 
-    private void createListTareasCompletadas(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
-        List list = new List(false, true,20);
-        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.gettareasTerminadas(listTareasProyecto);
-        if (!indice){
+    private void createListTareasCompletadas(ArrayList<Tarea> listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
+        List list = new List(false, true, 20);
+        ArrayList<Tarea> listTareasProyecto1 = (ArrayList<Tarea>) TareaController.gettareasTerminadas(listTareasProyecto);
+        if (!indice) {
             createTable(subCatPart, listTareasProyecto1);
-        }else{
-            for (Tarea i: listTareasProyecto1) {
+        } else {
+            for (Tarea i : listTareasProyecto1) {
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
         subCatPart.add(list);
     }
 
-    private void createListTareasEnEjecucion(ArrayList<Tarea>listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
-        List list = new List(false, true,20);
-        ArrayList<Tarea> listTareasProyecto1= (ArrayList<Tarea>) TareaController.getTareasEnEjecucion(listTareasProyecto);
-        if (!indice){
+    private void createListTareasEnEjecucion(ArrayList<Tarea> listTareasProyecto, Section subCatPart, boolean indice) throws DocumentException {
+        List list = new List(false, true, 20);
+        ArrayList<Tarea> listTareasProyecto1 = (ArrayList<Tarea>) TareaController.getTareasEnEjecucion(listTareasProyecto);
+        if (!indice) {
             createTable(subCatPart, listTareasProyecto1);
-        }else{
-            for (Tarea i: listTareasProyecto1 ){
+        } else {
+            for (Tarea i : listTareasProyecto1) {
                 list.add(new ListItem(i.getNombreTarea()));
             }
         }
@@ -418,16 +419,16 @@ public class GeneradorPdf {
     }
 
     private void createListDiseno(Section subCatPart) {
-        ArrayList<Diseno> disenosAprovados= (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        for (Diseno i: disenosAprovados) {
+        ArrayList<Diseno> disenosAprovados = (ArrayList<Diseno>) disenoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
+        for (Diseno i : disenosAprovados) {
             subCatPart.addSection(new ListItem(i.getNombreDiseno()));
         }
     }
 
     private void createListPresupuesto(Section subProyecto) {
-        ArrayList<Presupuesto> presupuestoAprovados= (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(),1);
-        for (Presupuesto i: presupuestoAprovados) {
-            subProyecto.addSection(new ListItem("IdPresupuesto: #"+i.getId()+" ($"+i.getCostoTotal()+")"));
+        ArrayList<Presupuesto> presupuestoAprovados = (ArrayList<Presupuesto>) presupuestoRepository.findByIdProyecto_IdAndIdEstado_Id(proyecto.getId(), 1);
+        for (Presupuesto i : presupuestoAprovados) {
+            subProyecto.addSection(new ListItem("IdPresupuesto: #" + i.getId() + " ($" + i.getCostoTotal() + ")"));
         }
     }
 
@@ -437,51 +438,54 @@ public class GeneradorPdf {
         }
     }
 
-    private void concatenarpdf(){
+    private void concatenarpdf() {
 
         try {
-            String []rta=new String[concatenar.size()+1];
-            rta[0]=FILE;
-            for (int i:concatenar) {
-            // URL del recurso a consultar
-            URL url = new URL("http://localhost:8081/data/files/direccion/"+i);
-            // Abrimos la conexión con la API REST
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            // Establecemos el método HTTP a utilizar (GET, POST, PUT, DELETE, etc.)
-            con.setRequestMethod("GET");
-            // Leemos la respuesta de la API REST
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String linea;
+            ArrayList<String> rta = new ArrayList<>();
+            rta.add(FILE);
+            for (int i : concatenar) {
+                // URL del recurso a consultar
+                URL url = new URL("http://localhost:8081/data/files/direccion/" + i);
+                // Abrimos la conexión con la API REST
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                // Establecemos el método HTTP a utilizar (GET, POST, PUT, DELETE, etc.)
+                con.setRequestMethod("GET");
+                // Leemos la respuesta de la API REST
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String linea;
                 StringBuilder respuesta = new StringBuilder();
-            while ((linea = in.readLine()) != null) {
-                respuesta.append(linea);
-            }
-            in.close();
-            }
-
-            // Creamos un objeto Document y un objeto PdfCopy
-            Document document = new Document();
-            PdfCopy copy = new PdfCopy(document, new FileOutputStream("c:/img/img/archivo_resultante.pdf"));
-
-            document.open();
-
-            // Recorremos cada archivo PDF y agregamos sus páginas al objeto PdfCopy
-            for (String archivo : rta) {
-                PdfReader reader = new PdfReader(archivo);
-                int numPaginas = reader.getNumberOfPages();
-                for (int pagina = 1; pagina <= numPaginas; pagina++) {
-                    PdfImportedPage page = copy.getImportedPage(reader, pagina);
-                    copy.addPage(page);
+                while ((linea = in.readLine()) != null) {
+                    respuesta.append(linea);
                 }
-                reader.close();
+                rta.add(respuesta.toString());
+                in.close();
             }
 
-            // Cerramos el objeto Document y el objeto PdfCopy
-            document.close();
-            copy.close();
+            Document pdfDocument = new Document();
+            FileOutputStream pdfOutputStream = new FileOutputStream("c:/img/img/archivo_resultante.pdf");
+            PdfCopy copy = new PdfCopy(pdfDocument, pdfOutputStream);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            pdfDocument.open();
+            System.out.println(rta);
+
+            for (String file : rta) {
+                if (file.contains(".pdf")) {
+                    /* Copy all the pages in the PDF file into the new PDF */
+                    PdfReader reader = new PdfReader(file);
+                    for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+                        copy.addPage(copy.getImportedPage(reader, i));
+                    }
+                }
+            }
+            pdfDocument.close();
+        } catch (ProtocolException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
