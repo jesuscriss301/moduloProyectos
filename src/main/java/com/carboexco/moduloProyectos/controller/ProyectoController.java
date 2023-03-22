@@ -140,12 +140,11 @@ public class ProyectoController {
         }}
         return proyectosEjecucion;
     }
-    private List<Proyecto> proyectosEtapa (List<Proyecto> proyectos,int idetapa){
+    private List<Proyecto> proyectosEtapa(List<Proyecto> proyectos,int idetapa){
 
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
         if(!proyectos.isEmpty()){
             Optional<Etapa> etapa= etapaRepository.findById(idetapa);
-            System.out.println(etapa);
             for (Proyecto i :proyectos) {
                 EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
                 if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
