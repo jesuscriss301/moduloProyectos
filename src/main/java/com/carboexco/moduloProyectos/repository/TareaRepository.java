@@ -16,4 +16,6 @@ public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     List<Tarea> findByIdEtapaProyecto_IdProyecto_Id(Integer idProyecto);
 
 
+
+
 }

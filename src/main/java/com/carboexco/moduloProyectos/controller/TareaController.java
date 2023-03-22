@@ -27,15 +27,9 @@ public class TareaController {
 
     @GetMapping("proyecto/{id}")
     public List<Tarea> getProyectoById(@PathVariable int id) {
-        List<Tarea> tarea= tareaRepository.findAll();
+        List<Tarea> tarea= tareaRepository.findByIdEtapaProyecto_IdProyecto_Id(id);
 
-        List<Tarea> tareaetapa = new ArrayList<Tarea>();
-            for (Tarea i : tarea) {
-                if (i.getIdEtapaProyecto().getId()==id){
-                    tareaetapa.add(i);
-                }
-            }
-        return tareaetapa;
+        return tarea;
     }
 
     public static List<Tarea> gettareasTerminadas(List<Tarea> tareas){
