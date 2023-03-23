@@ -109,19 +109,40 @@ public class ProyectoController {
         }
         return tablaFilas;
     }
+    @GetMapping("/tablaProyectos")
+    public Object[][] tablaProyectos() {
+        List<Proyecto> proyectos = proyectoRepository.findAll();
+        Object[][] tablaFilas = new Object[proyectos.size()+1][];
+        Object[] barras1=new Object[5];
+        barras1= new Object[]{"Id", "Nombre de proyecto", "Reponsble", "Etapa", "Avance"};
+        tablaFilas[0]=barras1;
+        int n = 1;
+        for (Proyecto i : proyectos) {
+            List<EtapaProyecto> proyectoE = etapaProyectoRepository.findByIdProyecto_IdAndIdEstado_Id(i.getId(), 1);
+            Optional<Etapa> etapa = etapaRepository.findById(proyectoE.get(proyectoE.size()-1).getId());
+            List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
+            if (!proyectoP.isEmpty() && etapa.get().getId()<7) {
+                tablaFilas[n++] = new Object[] {i.getId(), i.getNombreProyecto(),
+                        proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", ")),
+                        etapa.get().getNombreEtapa(),(etapa.get().getId()==5)?this.avanceProyecto(i, etapa.get()):"--"};
+            }
+        }
+        return tablaFilas;
+    }
 
     public String personaProyecto(@NotNull ProyectoPersona proyectoP) {
         return proyectoP.getId().getPersona().toString();
     }
 
-    public float avanceProyecto(Proyecto i, Etapa e){
+    public float avanceProyecto(Proyecto i, @NotNull Etapa e){
         float rta=0f;
         if (e.getId()==5) {
             List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e));
             int numerotareas = tareas.size();
             int numerotareasterminadas = TareaController.gettareasTerminadas(tareas).size();
+            System.out.println(numerotareasterminadas+" / "+numerotareas +" = "+((numerotareasterminadas / numerotareas) * 100));
             if(numerotareas!=0){
-                 rta= numerotareasterminadas / numerotareas * 100;
+                 rta= ((float)numerotareasterminadas / numerotareas) * 100;
             }
         }
         return rta;

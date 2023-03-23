@@ -10,4 +10,7 @@ import java.util.List;
 
 public interface EtapaProyectoRepository extends JpaRepository<EtapaProyecto, Integer> {
     EtapaProyecto findByidProyectoAndIdEtapa(Proyecto proyecto, Etapa etapa);
+
+    List<EtapaProyecto> findByIdProyecto_IdAndIdEstado_Id(Integer proyecto, Integer estado);
+
 }
