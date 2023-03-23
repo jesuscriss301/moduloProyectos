@@ -79,7 +79,7 @@ public class ProyectoController {
 
             Object[] barrasColumnas= new Object[3];
             barrasColumnas[0]=i.getNombreProyecto();
-            List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, etapa.get()));
+            List<Tarea> tareas= tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, etapa.get()).get());
             barrasColumnas[1] = tareas.size();
             barrasColumnas[2]= TareaController.gettareasTerminadas(tareas).size();
             barrasfilas[n]=barrasColumnas;
@@ -118,14 +118,17 @@ public class ProyectoController {
         tablaFilas[0]=barras1;
         int n = 1;
         for (Proyecto i : proyectos) {
-            List<EtapaProyecto> proyectoE = etapaProyectoRepository.findByIdProyecto_IdAndIdEstado_Id(i.getId(), 1);
-            Optional<Etapa> etapa = etapaRepository.findById(proyectoE.get(proyectoE.size()-1).getId());
+            List<EtapaProyecto> proyectoE = etapaProyectoRepository.findByIdProyecto_IdAndIdEstado_Id(i.getId(), 2);
+            System.out.println("----------------"+proyectoE+"--------------------\n");
+            Optional<Etapa> etapa = etapaRepository.findById(proyectoE.get(0).getIdEtapa().getId());
+            System.out.println("-----------------"+etapa.get()+"------------------------\n");
+            if(etapa.isPresent()){
             List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
             if (!proyectoP.isEmpty() && etapa.get().getId()<7) {
                 tablaFilas[n++] = new Object[] {i.getId(), i.getNombreProyecto(),
                         proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", ")),
                         etapa.get().getNombreEtapa(),(etapa.get().getId()==5)?this.avanceProyecto(i, etapa.get()):"--"};
-            }
+            }}
         }
         return tablaFilas;
     }
@@ -137,10 +140,10 @@ public class ProyectoController {
     public float avanceProyecto(Proyecto i, @NotNull Etapa e){
         float rta=0f;
         if (e.getId()==5) {
-            List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e));
+            List<Tarea> tareas = tareaPersonaRepository.findByidEtapaProyecto(etapaProyectoRepository.findByidProyectoAndIdEtapa(i, e).get());
             int numerotareas = tareas.size();
             int numerotareasterminadas = TareaController.gettareasTerminadas(tareas).size();
-            System.out.println(numerotareasterminadas+" / "+numerotareas +" = "+((numerotareasterminadas / numerotareas) * 100));
+            //System.out.println(numerotareasterminadas+" / "+numerotareas +" = "+((numerotareasterminadas / numerotareas) * 100));
             if(numerotareas!=0){
                  rta= ((float)numerotareasterminadas / numerotareas) * 100;
             }
@@ -156,8 +159,8 @@ public class ProyectoController {
         if(!proyectos.isEmpty()){
         Optional<Etapa> etapa= etapaRepository.findById(idetapa);
         for (Proyecto i :proyectos) {
-            EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
-            if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
+            Optional<EtapaProyecto> etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
+            if (etapas.isPresent()&&etapas.get().getFechaFinal()==null && etapas.get().getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
         }}
         return proyectosEjecucion;
     }
@@ -167,8 +170,8 @@ public class ProyectoController {
         if(!proyectos.isEmpty()){
             Optional<Etapa> etapa= etapaRepository.findById(idetapa);
             for (Proyecto i :proyectos) {
-                EtapaProyecto etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
-                if (etapas.getFechaFinal()==null && etapas.getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
+                Optional<EtapaProyecto> etapas = etapaProyectoRepository.findByidProyectoAndIdEtapa(i,etapa.get());
+                if (etapas.isPresent() && etapas.get().getFechaFinal()==null && etapas.get().getIdEstado().getId()==2){ proyectosEjecucion.add(i);}
             }}
         return proyectosEjecucion;
     }

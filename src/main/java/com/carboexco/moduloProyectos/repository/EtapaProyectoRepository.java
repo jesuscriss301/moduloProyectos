@@ -7,9 +7,10 @@ import com.carboexco.moduloProyectos.entity.Tipoproyecto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EtapaProyectoRepository extends JpaRepository<EtapaProyecto, Integer> {
-    EtapaProyecto findByidProyectoAndIdEtapa(Proyecto proyecto, Etapa etapa);
+    Optional<EtapaProyecto> findByidProyectoAndIdEtapa(Proyecto proyecto, Etapa etapa);
 
     List<EtapaProyecto> findByIdProyecto_IdAndIdEstado_Id(Integer proyecto, Integer estado);
 
