@@ -33,6 +33,14 @@ public class ProyectoPersonaController {
         return proyectoPersonatarea;
     }
 
+    @GetMapping("/proyecto/{idP}/{idE}")
+    public List<ProyectoPersona> getProyectoByIdproyectoIdetapa(@PathVariable int idP,@PathVariable int idE ) {
+
+        List<ProyectoPersona> proyectoPersonatarea = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(idP,idE);
+
+        return proyectoPersonatarea;
+    }
+
     @GetMapping("/persona/{id}")
     public List<ProyectoPersona> getPresupuestoById(@PathVariable int id) {
         List<ProyectoPersona> proyectoPersona = proyectoPersonaRepository.findAll();

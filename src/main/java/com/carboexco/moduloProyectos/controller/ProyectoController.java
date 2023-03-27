@@ -44,6 +44,12 @@ public class ProyectoController {
         }
         return null;
     }
+    @GetMapping("/busqueda/{id}")
+    public List<Proyecto> getProyectobyNombre(@PathVariable String id) {
+
+        List<Proyecto> proyecto = proyectoRepository.findByNombreProyectoLike(id);
+        return proyecto;
+    }
 
     @GetMapping("/circular")
     public Object[][] circular() {
@@ -109,25 +115,45 @@ public class ProyectoController {
         }
         return tablaFilas;
     }
-    @GetMapping("/tablaProyectos")
-    public Object[][] tablaProyectos() {
-        List<Proyecto> proyectos = proyectoRepository.findAll();
+
+    @GetMapping("/tablaProyectos/{busqueda}/")
+    public Object[][] tablaProyectos(@PathVariable String busqueda) {
+        List<Proyecto> proyectos=new ArrayList<>();
+        try {
+            if (busqueda=="*"){
+            proyectos = getProyectobyNombre(null);
+            }else {
+                int etapa = Integer.parseInt(busqueda);
+                if (etapa <= 8) {
+                    proyectos = proyectosEtapa(etapa);
+                } else {
+                    proyectos = getProyectobyNombre(busqueda);
+                }
+            }
+        }catch (NumberFormatException e) {
+            proyectos = getProyectobyNombre(busqueda);
+        }
+
+        return tablaProyectos(proyectos);
+    }
+
+    public Object[][] tablaProyectos( List<Proyecto> proyectos) {
+        //System.out.println("------------"+proyectos+"------------------");
+        if (proyectos == null || proyectos.isEmpty()){
+            proyectos = proyectoRepository.findAll();}
         Object[][] tablaFilas = new Object[proyectos.size()+1][];
-        Object[] barras1=new Object[5];
-        barras1= new Object[]{"Id", "Nombre de proyecto", "Reponsble", "Etapa", "Avance"};
+        Object[] barras1 = new Object[]{"Id", "Nombre de proyecto", "Reponsble", "Etapa", "Avance"};
         tablaFilas[0]=barras1;
         int n = 1;
         for (Proyecto i : proyectos) {
             List<EtapaProyecto> proyectoE = etapaProyectoRepository.findByIdProyecto_IdAndIdEstado_Id(i.getId(), 2);
-            System.out.println("----------------"+proyectoE+"--------------------\n");
             Optional<Etapa> etapa = etapaRepository.findById(proyectoE.get(0).getIdEtapa().getId());
-            System.out.println("-----------------"+etapa.get()+"------------------------\n");
             if(etapa.isPresent()){
             List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
             if (!proyectoP.isEmpty() && etapa.get().getId()<7) {
                 tablaFilas[n++] = new Object[] {i.getId(), i.getNombreProyecto(),
                         proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", ")),
-                        etapa.get().getNombreEtapa(),(etapa.get().getId()==5)?this.avanceProyecto(i, etapa.get()):"--"};
+                        etapa.get().getNombreEtapa(),(etapa.get().getId()==5)?this.avanceProyecto(i, etapa.get())+"%":"--"};
             }}
         }
         return tablaFilas;
@@ -164,6 +190,7 @@ public class ProyectoController {
         }}
         return proyectosEjecucion;
     }
+
     private List<Proyecto> proyectosEtapa(List<Proyecto> proyectos,int idetapa){
 
         List <Proyecto> proyectosEjecucion= new ArrayList<>();
