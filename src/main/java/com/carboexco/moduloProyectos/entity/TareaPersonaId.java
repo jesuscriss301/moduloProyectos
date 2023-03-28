@@ -22,8 +22,6 @@ public class TareaPersonaId implements Serializable {
     @Column(name = "id_persona", nullable = false)
     private Integer idPersona;
 
-    @Column(name = "id_etapa", nullable = false)
-    private Integer idEtapa;
 
     @Override
     public boolean equals(Object o) {
@@ -31,13 +29,12 @@ public class TareaPersonaId implements Serializable {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         TareaPersonaId entity = (TareaPersonaId) o;
         return Objects.equals(this.idTarea, entity.idTarea) &&
-                Objects.equals(this.idEtapa, entity.idEtapa) &&
                 Objects.equals(this.idPersona, entity.idPersona);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idTarea, idEtapa, idPersona);
+        return Objects.hash(idTarea, idPersona);
     }
 
 }

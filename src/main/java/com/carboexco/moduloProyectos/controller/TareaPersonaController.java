@@ -1,5 +1,7 @@
 package com.carboexco.moduloProyectos.controller;
 
+import com.carboexco.moduloProyectos.entity.Proyecto;
+import com.carboexco.moduloProyectos.entity.Tarea;
 import com.carboexco.moduloProyectos.entity.TareaPersona;
 import com.carboexco.moduloProyectos.repository.TareaPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +26,8 @@ public class TareaPersonaController {
 
     @GetMapping("/tareas/{id}")
     public List<TareaPersona> getProyectoById(@PathVariable int id) {
-        List<TareaPersona> tareaPersona = tareaPersonaRepository.findAll();
-        List<TareaPersona> tareaPersonatarea = new ArrayList<TareaPersona>();
-        for (TareaPersona i : tareaPersona) {
-            if (i.getId().getIdTarea()==id){
-                tareaPersonatarea.add(i);
-            }
-        }
-        return tareaPersonatarea;
+        List<TareaPersona> tareaPersona = tareaPersonaRepository.findById_IdTarea( id);
+        return tareaPersona;
     }
 
     @GetMapping("/persona/{id}")
@@ -52,9 +48,9 @@ public class TareaPersonaController {
         tareaPersonaRepository.save(tareaPersona);
         return tareaPersona;
     }
-
-    @PutMapping("/{idPr}/{idP}/{idE}")
-    public TareaPersona putTareaPersonabyId(@PathVariable int idPr,@PathVariable int idP, @PathVariable int idE,@RequestBody TareaPersona tareaPersona) {
+    /*
+    @PutMapping("/{idPr}/{idE}")
+    public TareaPersona putTareaPersonabyId(@PathVariable int idPr, @PathVariable int idE,@RequestBody TareaPersona tareaPersona) {
 
         Optional<List<TareaPersona>> tareaPersonaCurrent = Optional.of(tareaPersonaRepository.findAll());
 
@@ -75,8 +71,8 @@ public class TareaPersonaController {
         return null;
     }
 
-    @DeleteMapping("/{idPr}/{idP}/{idE}")
-    public TareaPersona deleteTareaPersonabyId(@PathVariable int idPr,@PathVariable int idP, @PathVariable int idE) {
+    @DeleteMapping("/{idPr}/{idE}")
+    public TareaPersona deleteTareaPersonabyId(@PathVariable int idPr, @PathVariable int idE) {
         Optional<List<TareaPersona>> tareaPersonaCurrent = Optional.of(tareaPersonaRepository.findAll());
 
         if (tareaPersonaCurrent.isPresent()) {
@@ -89,8 +85,15 @@ public class TareaPersonaController {
                     return i;
                 }
             }
-
         }
         return null;
     }
+
+    @GetMapping("/tareaEtapa/{idtarea}/{idetapa}")
+    public List<TareaPersona> tareaPersona(@PathVariable int idtarea, @PathVariable int idetapa){
+
+        List<TareaPersona> tareaPersona = tareaPersonaRepository.findById_IdTareaAndId_IdEtapa(idtarea,idetapa);
+         return tareaPersona;
+    }
+*/
 }

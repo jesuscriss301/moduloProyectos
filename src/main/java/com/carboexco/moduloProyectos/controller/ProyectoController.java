@@ -44,6 +44,7 @@ public class ProyectoController {
         }
         return null;
     }
+
     @GetMapping("/busqueda/{id}")
     public List<Proyecto> getProyectobyNombre(@PathVariable String id) {
 
@@ -70,6 +71,7 @@ public class ProyectoController {
         }
         return circularfilas;
     }
+
     @GetMapping("/barras")
     public Object[][] barras() {
         List<Proyecto> proyectosEjecucion= proyectosEtapa(5);
@@ -93,6 +95,7 @@ public class ProyectoController {
         }
         return barrasfilas;
     }
+
     @GetMapping("/tabla")
     public Object[][] tabla() {
         List<Proyecto> proyectosEjecucion = proyectosEtapa(5);
@@ -176,7 +179,6 @@ public class ProyectoController {
         }
         return rta;
     }
-
 
     @GetMapping("/etapa/{idetapa}")
     public List<Proyecto> proyectosEtapa(@PathVariable int idetapa){
