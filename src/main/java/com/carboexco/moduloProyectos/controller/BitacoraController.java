@@ -1,7 +1,9 @@
 package com.carboexco.moduloProyectos.controller;
 
 import com.carboexco.moduloProyectos.entity.Bitacora;
+import com.carboexco.moduloProyectos.entity.Etapa;
 import com.carboexco.moduloProyectos.repository.BitacoraRepository;
+import com.carboexco.moduloProyectos.repository.EtapaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ public class BitacoraController {
 
     @Autowired
     BitacoraRepository bitacoraRepository;
+    @Autowired
+    private EtapaRepository etapaRepository;
 
     @GetMapping
     public List<Bitacora> getBitacoraAll() {
@@ -38,11 +42,20 @@ public class BitacoraController {
     public Bitacora getBitacorabyId(@PathVariable int id) {
 
         Optional<Bitacora> bitacora = bitacoraRepository.findById(id);
-
         if (bitacora.isPresent()) {
             return bitacora.get();
         }
+        return null;
+    }
 
+    @GetMapping("tarea/{idT}/{idE}")
+    public List<Bitacora> getBitacoraTareaEtapa(@PathVariable int idT,@PathVariable int idE) {
+
+        Optional<Etapa> etapa= etapaRepository.findById(idE);
+        if (etapa.isPresent()) {
+            List<Bitacora> bitacoras = bitacoraRepository.findByIdTarea_IdAndIdTarea_IdEtapaProyecto_IdEtapa(idT, etapa.get());
+            return bitacoras;
+        }
         return null;
     }
 
