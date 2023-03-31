@@ -12,6 +12,11 @@ import java.util.Optional;
 public interface EtapaProyectoRepository extends JpaRepository<EtapaProyecto, Integer> {
     Optional<EtapaProyecto> findByidProyectoAndIdEtapa(Proyecto proyecto, Etapa etapa);
 
+
+    Optional<EtapaProyecto> findByIdProyecto_IdAndIdEtapa_Id(Integer id, Integer id1);
+    
+    
+
     List<EtapaProyecto> findByIdProyecto_IdAndIdEstado_Id(Integer proyecto, Integer estado);
 
 }

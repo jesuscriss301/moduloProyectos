@@ -33,6 +33,14 @@ public class EtapaProyectoController {
         return null;
     }
 
+    @GetMapping("/{idP}/{idE}")
+    public Optional<EtapaProyecto> getEtapaProyectobyId(@PathVariable int idP, @PathVariable int idE) {
+
+        Optional<EtapaProyecto> etapa_proyecto = etapa_proyectoRepository.findByIdProyecto_IdAndIdEtapa_Id(idP,idE);
+
+        return etapa_proyecto;
+    }
+
     @PostMapping
     public EtapaProyecto postEtapaProyecto(@RequestBody EtapaProyecto etapa_proyecto) {
         etapa_proyectoRepository.save(etapa_proyecto);

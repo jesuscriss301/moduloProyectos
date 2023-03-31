@@ -17,7 +17,6 @@ com\carboexco\moduloProyectos\controller\TareaController.class
 com\carboexco\moduloProyectos\entity\Estado.class
 com\carboexco\moduloProyectos\SwaggerConfig.class
 com\carboexco\moduloProyectos\controller\EtapaController.class
-com\carboexco\moduloProyectos\controller\EtapaProyectoController.class
 com\carboexco\moduloProyectos\repository\DisenoRepository.class
 com\carboexco\moduloProyectos\entity\PresupuestoMaterial.class
 com\carboexco\moduloProyectos\controller\BitacoraController.class
