@@ -33,9 +33,9 @@ public class DisenoController {
 
         return null;
     }
-    @GetMapping("/diseno/proyecto/{id}")
+    @GetMapping("/proyecto/{id}")
     public List<Diseno> getproyectoById(@PathVariable int id) {
-        List<Diseno> disenos = disenoRepository.findAll();
+        List<Diseno> disenos =  disenoRepository.findByIdProyecto_Id(id);
         ArrayList<Diseno> disenoProyecto = new ArrayList<Diseno>();
         for (Diseno i : disenos) {
             if (i.getIdProyecto().getId()==id){

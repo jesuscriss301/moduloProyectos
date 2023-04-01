@@ -8,5 +8,7 @@ import java.util.List;
 public interface DisenoRepository extends JpaRepository<Diseno, Integer> {
     List<Diseno> findByIdProyecto_IdAndIdEstado_Id(Integer idProyecto, Integer idEstado);
 
+    List<Diseno> findByIdProyecto_Id(Integer id);
+
 
 }
