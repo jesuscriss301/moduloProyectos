@@ -30,19 +30,12 @@ public class DisenoController {
         if (diseno.isPresent()) {
             return diseno.get();
         }
-
         return null;
     }
     @GetMapping("/proyecto/{id}")
     public List<Diseno> getproyectoById(@PathVariable int id) {
         List<Diseno> disenos =  disenoRepository.findByIdProyecto_Id(id);
-        ArrayList<Diseno> disenoProyecto = new ArrayList<Diseno>();
-        for (Diseno i : disenos) {
-            if (i.getIdProyecto().getId()==id){
-                disenoProyecto.add(i);
-            }
-        }
-        return disenoProyecto;
+        return disenos;
     }
 
 
