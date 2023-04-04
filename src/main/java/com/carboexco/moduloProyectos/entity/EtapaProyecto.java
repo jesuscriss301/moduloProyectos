@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Table(name = "etapa_proyecto")
 public class EtapaProyecto {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
