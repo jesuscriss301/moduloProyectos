@@ -85,6 +85,22 @@ public class BitacoraController {
         return null;
     }
 
+    @GetMapping("/{id}/{idF}")
+    public Bitacora putBitacoraid (@PathVariable int id,@PathVariable int idF) {
+
+        Optional<Bitacora> bitacoraCurrent = bitacoraRepository.findById(id);
+
+        if (bitacoraCurrent.isPresent()) {
+            Bitacora bitacoraReturn = bitacoraCurrent.get();
+
+            bitacoraReturn.setFileFoto(idF);
+
+            bitacoraRepository.save(bitacoraReturn);
+            return bitacoraReturn;
+        }
+
+        return null;
+    }
 
     @DeleteMapping("/{id}")
     public Bitacora deleteBitacorabyId(@PathVariable int id) {
