@@ -60,9 +60,9 @@ public class BitacoraController {
     }
 
     @PostMapping
-    public Bitacora postBitacora(@RequestBody Bitacora bitacora) {
+    public int postBitacora(@RequestBody Bitacora bitacora) {
         bitacoraRepository.save(bitacora);
-        return bitacora;
+        return bitacora.getId();
     }
 
     @PutMapping("/{id}")
