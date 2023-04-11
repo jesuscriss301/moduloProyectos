@@ -22,26 +22,14 @@ public class PresupuestoPersonalController {
 
     @GetMapping("/proyecto/{id}")
     public List<PresupuestoPersonal> getProyectoById(@PathVariable int id) {
-        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findAll();
-        List<PresupuestoPersonal> presupuestoPersonaltarea = new ArrayList<PresupuestoPersonal>();
-        for (PresupuestoPersonal i : presupuestoPersonal) {
-            if (i.getIdPresupuesto().getIdProyecto().getId()==id){
-                presupuestoPersonaltarea.add(i);
-            }
-        }
-        return presupuestoPersonaltarea;
+        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findByIdPresupuesto_IdProyecto_Id(id);
+        return presupuestoPersonal;
     }
 
     @GetMapping("/presupuesto/{id}")
     public List<PresupuestoPersonal> getPresupuestoById(@PathVariable int id) {
-        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findAll();
-        List<PresupuestoPersonal> presupuestoPersonaltarea = new ArrayList<PresupuestoPersonal>();
-        for (PresupuestoPersonal i : presupuestoPersonal) {
-            if (i.getIdPresupuesto().getId()==id){
-                presupuestoPersonaltarea.add(i);
-            }
-        }
-        return presupuestoPersonaltarea;
+        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findByIdPresupuesto_Id(id);
+        return presupuestoPersonal;
     }
 
 

@@ -22,7 +22,7 @@ public class PresupuestoController {
         return presupuestoRepository.findAll();
     }
 
-    @GetMapping("/presupuesto/proyecto/{id}")
+    @GetMapping("/proyecto/{id}")
     public List<Presupuesto> getPresupuestoAll(@PathVariable int id) {
         List<Presupuesto> presupuesto = presupuestoRepository.findAll();
         List<Presupuesto> presupuestoproyecto = new ArrayList<Presupuesto>();
