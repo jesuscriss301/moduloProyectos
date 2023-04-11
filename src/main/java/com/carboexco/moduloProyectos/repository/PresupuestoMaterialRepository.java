@@ -9,4 +9,8 @@ import java.util.List;
 public interface PresupuestoMaterialRepository extends JpaRepository<PresupuestoMaterial, PresupuestoMaterialId> {
     List<PresupuestoMaterial> findByIdPresupuesto_Id(Integer id);
 
+    List<PresupuestoMaterial> findByIdPresupuesto_IdProyecto_Id(Integer id);
+
+    List<PresupuestoMaterial> findByIdPresupuesto_IdAndIdMaterial_TipoMaterial(Integer id, String tipoMaterial);
+
 }
