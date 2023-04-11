@@ -1,6 +1,7 @@
 package com.carboexco.moduloProyectos.controller;
 import com.carboexco.moduloProyectos.entity.PresupuestoMaterial;
 import com.carboexco.moduloProyectos.repository.PresupuestoMaterialRepository;
+import com.carboexco.moduloProyectos.repository.TipoproyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,8 @@ public class PresupuestoMaterialController {
 
     @Autowired
     PresupuestoMaterialRepository presupuestoMaterialRepository;
+    @Autowired
+    private TipoproyectoRepository tipoproyectoRepository;
 
     @GetMapping
     public List<PresupuestoMaterial> getPresupuestoMaterialAll() {
@@ -22,28 +25,22 @@ public class PresupuestoMaterialController {
 
     @GetMapping("/proyecto/{id}")
     public List<PresupuestoMaterial> getProyectoById(@PathVariable int id) {
-        List<PresupuestoMaterial> presupuestoMaterial = presupuestoMaterialRepository.findAll();
-        List<PresupuestoMaterial> presupuestoMaterialtarea = new ArrayList<PresupuestoMaterial>();
-        for (PresupuestoMaterial i : presupuestoMaterial) {
-            if (i.getIdPresupuesto().getIdProyecto().getId()==id){
-                presupuestoMaterialtarea.add(i);
-            }
-        }
-        return presupuestoMaterialtarea;
+        List<PresupuestoMaterial> presupuestoMaterial = presupuestoMaterialRepository.findByIdPresupuesto_IdProyecto_Id(id);
+        return presupuestoMaterial;
     }
 
     @GetMapping("/presupuesto/{id}")
     public List<PresupuestoMaterial> getPresupuestoById(@PathVariable int id) {
-        List<PresupuestoMaterial> presupuestoMaterial = presupuestoMaterialRepository.findAll();
-        List<PresupuestoMaterial> presupuestoMaterialtarea = new ArrayList<PresupuestoMaterial>();
-        for (PresupuestoMaterial i : presupuestoMaterial) {
-            if (i.getIdPresupuesto().getId()==id){
-                presupuestoMaterialtarea.add(i);
-            }
-        }
-        return presupuestoMaterialtarea;
+        List<PresupuestoMaterial> presupuestoMaterial = presupuestoMaterialRepository.findByIdPresupuesto_Id(id);
+        return presupuestoMaterial;
     }
 
+    @GetMapping("/{presupuesto}/{tipoMaterial}")
+    public List<PresupuestoMaterial> getProyectoTipo(@PathVariable int presupuesto,@PathVariable String tipoMaterial){
+
+        List<PresupuestoMaterial> presupuestoMaterial = presupuestoMaterialRepository.findByIdPresupuesto_IdAndIdMaterial_TipoMaterial(presupuesto,tipoMaterial);
+        return presupuestoMaterial;
+    }
 
     @PostMapping
     public PresupuestoMaterial postPresupuestoMaterial(@RequestBody PresupuestoMaterial presupuestoMaterial) {
