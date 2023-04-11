@@ -1,5 +1,6 @@
 package com.carboexco.moduloProyectos.controller;
 
+import com.carboexco.moduloProyectos.entity.Bitacora;
 import com.carboexco.moduloProyectos.entity.Diseno;
 import com.carboexco.moduloProyectos.repository.DisenoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,25 @@ public class DisenoController {
         return disenos;
     }
 
+    @GetMapping("/{id}/{idF}")
+    public Diseno putDisenoid (@PathVariable int id, @PathVariable int idF) {
+
+        Optional<Diseno> bitacoraCurrent = disenoRepository.findById(id);
+
+        if (bitacoraCurrent.isPresent()) {
+            Diseno disenoReturn = bitacoraCurrent.get();
+
+            disenoReturn.setIdFoto(idF);
+            disenoRepository.save(disenoReturn);
+            return disenoReturn;
+        }
+        return null;
+    }
 
     @PostMapping
-    public Diseno postDiseno(@RequestBody Diseno diseno) {
+    public int postDiseno(@RequestBody Diseno diseno) {
         disenoRepository.save(diseno);
-        return diseno;
+        return diseno.getId();
     }
 
     @PutMapping("/{id}")

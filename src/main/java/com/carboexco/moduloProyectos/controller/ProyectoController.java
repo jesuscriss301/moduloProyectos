@@ -48,7 +48,12 @@ public class ProyectoController {
     @GetMapping("/busqueda/{id}")
     public List<Proyecto> getProyectobyNombre(@PathVariable String id) {
 
-        List<Proyecto> proyecto = proyectoRepository.findByNombreProyectoLike(id);
+        List<Proyecto> proyecto=new ArrayList<>();
+        if (id == null) {
+            proyecto=proyectoRepository.findAll();
+        }else {
+            proyecto = proyectoRepository.findByNombreProyectoLike(id);
+        }
         return proyecto;
     }
 
