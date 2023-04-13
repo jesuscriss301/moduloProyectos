@@ -33,5 +33,4 @@ public class PresupuestoMaterial {
     @Column(name = "tiempo_uso", columnDefinition = "INT UNSIGNED")
     private Long tiempoUso;
 
-
 }

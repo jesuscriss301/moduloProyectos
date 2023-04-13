@@ -21,7 +21,7 @@ public class Presupuesto {
     private Proyecto idProyecto;
 
     @Column(name = "costo_total")
-    private Integer costoTotal;
+    private Long costoTotal;
 
     @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)

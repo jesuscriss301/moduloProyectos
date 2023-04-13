@@ -116,9 +116,9 @@ public class ProyectoController {
             List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
             if (!proyectoP.isEmpty()) {
                 String nombreProyecto = i.getNombreProyecto();
-                String idsPersonas = proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", "));
+                //String idsPersonas = proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", "));
                 float avanceProyecto = this.avanceProyecto(i, etapa.get());
-                tablaFilas[n++] = new Object[] {nombreProyecto, idsPersonas, avanceProyecto};
+                tablaFilas[n++] = new Object[] {nombreProyecto, responsables(i.getId()), avanceProyecto};
             }
         }
         return tablaFilas;
@@ -146,7 +146,7 @@ public class ProyectoController {
     }
 
     public Object[][] tablaProyectos( List<Proyecto> proyectos) {
-        //System.out.println("------------"+proyectos+"------------------");
+
         if (proyectos == null || proyectos.isEmpty()){
             proyectos = proyectoRepository.findAll();}
         Object[][] tablaFilas = new Object[proyectos.size()+1][];
@@ -158,13 +158,27 @@ public class ProyectoController {
             Optional<Etapa> etapa = etapaRepository.findById(proyectoE.get(0).getIdEtapa().getId());
             if(etapa.isPresent()){
             List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i.getId(), etapa.get().getId());
+            String avance ="--";
+            if(etapa.get().getId()==5){
+                avance= this.avanceProyecto(i, etapa.get())+"%";
+            }
+            if(etapa.get().getId()==6){
+                avance ="100%";
+            }
             if (!proyectoP.isEmpty() && etapa.get().getId()<7) {
                 tablaFilas[n++] = new Object[] {i.getId(), i.getNombreProyecto(),
-                        proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", ")),
-                        etapa.get().getNombreEtapa(),(etapa.get().getId()==5)?this.avanceProyecto(i, etapa.get())+"%":"--"};
+                        responsables(i.getId()),
+                        etapa.get().getNombreEtapa(),avance};
             }}
         }
         return tablaFilas;
+    }
+
+    @GetMapping("/responsable/{i}")
+    public String responsables(@PathVariable int i){
+        List<EtapaProyecto> proyectoE = etapaProyectoRepository.findByIdProyecto_IdAndIdEstado_Id(i, 2);
+        List<ProyectoPersona> proyectoP = proyectoPersonaRepository.findById_ProyectoAndId_Etapa(i, proyectoE.get(0).getIdEtapa().getId());
+        return proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", "));
     }
 
     public String personaProyecto(@NotNull ProyectoPersona proyectoP) {

@@ -1,6 +1,10 @@
 package com.carboexco.moduloProyectos.controller;
 
 import com.carboexco.moduloProyectos.entity.Presupuesto;
+import com.carboexco.moduloProyectos.entity.PresupuestoMaterial;
+import com.carboexco.moduloProyectos.entity.PresupuestoPersonal;
+import com.carboexco.moduloProyectos.repository.PresupuestoMaterialRepository;
+import com.carboexco.moduloProyectos.repository.PresupuestoPersonalRepository;
 import com.carboexco.moduloProyectos.repository.PresupuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,10 @@ public class PresupuestoController {
 
     @Autowired
     PresupuestoRepository presupuestoRepository;
+    @Autowired
+    private PresupuestoMaterialRepository presupuestoMaterialRepository;
+    @Autowired
+    private PresupuestoPersonalRepository presupuestoPersonalRepository;
 
     @GetMapping
     public List<Presupuesto> getPresupuestoAll() {
@@ -32,6 +40,36 @@ public class PresupuestoController {
             }
         }
         return presupuestoproyecto;
+    }
+
+    @GetMapping("costototal/{Presupuesto}")
+    public long setCostoTotal(@PathVariable int Presupuesto){
+        long costoTotal= 0;
+        List<PresupuestoMaterial> materiales = presupuestoMaterialRepository.findByIdPresupuesto_Id(Presupuesto);
+        List<PresupuestoPersonal> Personal = presupuestoPersonalRepository.findByIdPresupuesto_Id(Presupuesto);
+        for (PresupuestoMaterial i:materiales) {
+            costoTotal+=i.getCosto()*i.getCantidad()*i.getTiempoUso();
+        }
+        for (PresupuestoPersonal i:Personal) {
+            costoTotal+=i.getCosto()*i.getCantidad()*i.getTiempoUso();
+        }
+        putCostobyId(Presupuesto,costoTotal);
+        return costoTotal;
+    }
+
+    public Presupuesto putCostobyId(int id, long presupuesto) {
+
+        Optional<Presupuesto> presupuestoCurrent = presupuestoRepository.findById(id);
+
+        if (presupuestoCurrent.isPresent()) {
+            Presupuesto presupuestoReturn = presupuestoCurrent.get();
+
+            presupuestoReturn.setCostoTotal(presupuesto);
+
+            presupuestoRepository.save(presupuestoReturn);
+            return presupuestoReturn;
+        }
+        return null;
     }
 
     @GetMapping("/{id}")
