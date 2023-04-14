@@ -42,16 +42,28 @@ public class PresupuestoController {
         return presupuestoproyecto;
     }
 
-    @GetMapping("costototal/{Presupuesto}")
+    @GetMapping("/costototal/{Presupuesto}")
     public long setCostoTotal(@PathVariable int Presupuesto){
         long costoTotal= 0;
         List<PresupuestoMaterial> materiales = presupuestoMaterialRepository.findByIdPresupuesto_Id(Presupuesto);
         List<PresupuestoPersonal> Personal = presupuestoPersonalRepository.findByIdPresupuesto_Id(Presupuesto);
+
         for (PresupuestoMaterial i:materiales) {
-            costoTotal+=i.getCosto()*i.getCantidad()*i.getTiempoUso();
+            System.err.println(i);
+            if (i.getIdMaterial().getTipoMaterial().equals("Maquinaria")){
+                if (i.getCosto()!=null && i.getCantidad()!=null && i.getTiempoUso()!=null) {
+                    costoTotal += i.getCosto() * i.getCantidad() * i.getTiempoUso();
+                }
+            }else{
+                if (i.getCosto()!=null && i.getCantidad()!=null) {
+                    costoTotal += i.getCosto() * i.getCantidad();
+                }
+            }
         }
         for (PresupuestoPersonal i:Personal) {
-            costoTotal+=i.getCosto()*i.getCantidad()*i.getTiempoUso();
+            if (i.getCosto()!=null && i.getCantidad()!=null && i.getTiempoUso()!=null) {
+                costoTotal += i.getCosto() * i.getCantidad() * i.getTiempoUso();
+            }
         }
         putCostobyId(Presupuesto,costoTotal);
         return costoTotal;
