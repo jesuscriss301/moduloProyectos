@@ -23,15 +23,10 @@ public class MaterialController {
     }
 
     @GetMapping("/tipo/{tipomaterial}")
-    public List<Material> getMaterialAll(@PathVariable int tipomaterial) {
-        List<Material> material = materialRepository.findAll();
-        List<Material> materialtarea = new ArrayList<Material>();
-        for (Material i : material) {
-            if (i.getTipoMaterial().equals( tipomaterial)){
-                materialtarea.add(i);
-            }
-        }
-        return materialtarea;
+    public List<Material> getMaterialAll(@PathVariable String tipomaterial) {
+        List<Material> material = materialRepository.findByTipoMaterial(tipomaterial);
+
+        return material;
     }
 
     @GetMapping("/{id}")
@@ -42,7 +37,6 @@ public class MaterialController {
         if (material.isPresent()) {
             return material.get();
         }
-
         return null;
     }
 

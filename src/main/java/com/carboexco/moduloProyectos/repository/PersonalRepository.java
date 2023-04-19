@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PersonalRepository extends JpaRepository<Personal, Integer> {
     List<Personal> findByIdCargo(Integer idCargo);
+
 }

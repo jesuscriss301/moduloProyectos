@@ -150,7 +150,7 @@ public class ProyectoController {
         if (proyectos == null || proyectos.isEmpty()){
             proyectos = proyectoRepository.findAll();}
         Object[][] tablaFilas = new Object[proyectos.size()+1][];
-        Object[] barras1 = new Object[]{"Id", "Nombre de proyecto", "Reponsble", "Etapa", "Avance"};
+        Object[] barras1 = new Object[]{"Id", "Nombre de proyecto", "Responsable", "Etapa", "Avance"};
         tablaFilas[0]=barras1;
         int n = 1;
         for (Proyecto i : proyectos) {
@@ -246,6 +246,7 @@ public class ProyectoController {
             proyectoReturn.setIdTipoProyecto(proyecto.getIdTipoProyecto());
             proyectoReturn.setObjetivoGeneral(proyecto.getObjetivoGeneral());
             proyectoReturn.setObjetivoEspecifico(proyecto.getObjetivoEspecifico());
+
             proyectoRepository.save(proyectoReturn);
             return proyectoReturn;
         }
