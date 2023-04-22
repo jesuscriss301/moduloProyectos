@@ -118,7 +118,7 @@ public class ProyectoController {
                 String nombreProyecto = i.getNombreProyecto();
                 //String idsPersonas = proyectoP.stream().map(pp -> String.valueOf(pp.getId().getPersona())).collect(Collectors.joining(", "));
                 float avanceProyecto = this.avanceProyecto(i, etapa.get());
-                tablaFilas[n++] = new Object[] {nombreProyecto, responsables(i.getId()), avanceProyecto};
+                tablaFilas[n++] = new Object[] {nombreProyecto, responsables(i.getId()), avanceProyecto+"%"};
             }
         }
         return tablaFilas;

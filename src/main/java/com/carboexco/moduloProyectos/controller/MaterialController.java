@@ -5,9 +5,7 @@ import com.carboexco.moduloProyectos.repository.MaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -26,6 +24,12 @@ public class MaterialController {
     public List<Material> getMaterialAll(@PathVariable String tipomaterial) {
         List<Material> material = materialRepository.findByTipoMaterial(tipomaterial);
 
+        Collections.sort(material, new Comparator<Material>() {
+            @Override
+            public int compare(Material p1, Material p2) {
+                return p1.getIdProducto().compareTo(p2.getIdProducto());
+            }
+        });
         return material;
     }
 

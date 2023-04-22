@@ -50,6 +50,7 @@ com\carboexco\moduloProyectos\repository\PresupuestoPersonalRepository.class
 com\carboexco\moduloProyectos\repository\TipoproyectoRepository.class
 com\carboexco\moduloProyectos\controller\DisenoController.class
 com\carboexco\moduloProyectos\controller\PersonalController.class
+com\carboexco\moduloProyectos\controller\MaterialController$1.class
 com\carboexco\moduloProyectos\repository\MaterialRepository.class
 com\carboexco\moduloProyectos\entity\Personal.class
 com\carboexco\moduloProyectos\repository\TareaPersonaRepository.class

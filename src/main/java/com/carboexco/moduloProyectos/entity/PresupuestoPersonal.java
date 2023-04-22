@@ -19,10 +19,7 @@ public class PresupuestoPersonal {
     @JoinColumn(name = "id_presupuesto", nullable = false)
     private Presupuesto idPresupuesto;
 
-    @MapsId("idPersonal")
-    @ManyToOne
-    @JoinColumn(name = "id_personal", nullable = false)
-    private Personal idPersonal;
+
 
     @Column(name = "costo", columnDefinition = "INT UNSIGNED")
     private Long costo;

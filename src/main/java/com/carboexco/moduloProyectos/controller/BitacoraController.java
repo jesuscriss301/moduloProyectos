@@ -66,7 +66,7 @@ public class BitacoraController {
     }
 
     @PutMapping("/{id}")
-    public Bitacora putBitacorabyId(@PathVariable int id, @RequestBody Bitacora bitacora) {
+    public int putBitacorabyId(@PathVariable int id, @RequestBody Bitacora bitacora) {
 
         Optional<Bitacora> bitacoraCurrent = bitacoraRepository.findById(id);
 
@@ -79,10 +79,10 @@ public class BitacoraController {
             bitacoraReturn.setFileFoto(bitacora.getFileFoto());
 
             bitacoraRepository.save(bitacoraReturn);
-            return bitacoraReturn;
+            return bitacoraReturn.getId();
         }
 
-        return null;
+        return -1;
     }
 
     @GetMapping("/{id}/{idF}")

@@ -16,10 +16,10 @@ public class Material {
     @Column(name = "id_material", nullable = false)
     private Integer id;
 
-    @Column(name = "id_producto", nullable = false)
-    private Integer idProducto;
-
     @Column(name = "tipo_material", nullable = false, length = 15)
     private String tipoMaterial;
+
+    @Column(name = "id_producto", length = 200)
+    private String idProducto;
 
 }
