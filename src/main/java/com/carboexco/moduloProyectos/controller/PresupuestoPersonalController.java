@@ -1,10 +1,10 @@
 package com.carboexco.moduloProyectos.controller;
+
 import com.carboexco.moduloProyectos.entity.PresupuestoPersonal;
 import com.carboexco.moduloProyectos.repository.PresupuestoPersonalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -22,7 +22,7 @@ public class PresupuestoPersonalController {
 
     @GetMapping("/proyecto/{id}")
     public List<PresupuestoPersonal> getProyectoById(@PathVariable int id) {
-        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findByIdPresupuesto_IdProyecto_Id(id);
+        List<PresupuestoPersonal> presupuestoPersonal = presupuestoPersonalRepository.findByIdPresupuesto_IdOrderById_IdPersonalAsc(id);
         return presupuestoPersonal;
     }
 

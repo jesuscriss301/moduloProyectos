@@ -7,7 +7,6 @@ import com.carboexco.moduloProyectos.repository.EtapaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +27,14 @@ public class BitacoraController {
 
     @GetMapping("/tarea/{id}")
     public List<Bitacora> getTareaById(@PathVariable int id) {
-        List<Bitacora> bitacora = bitacoraRepository.findAll();
-        List<Bitacora> bitacoratarea = new ArrayList<Bitacora>();
+        List<Bitacora> bitacora = bitacoraRepository.findByIdTarea_IdOrderByFechaHoraDesc(id);
+        /*List<Bitacora> bitacoratarea = new ArrayList<Bitacora>();
         for (Bitacora i : bitacora) {
             if (i.getIdTarea().getId()==id){
                 bitacoratarea.add(i);
             }
-        }
-        return bitacoratarea;
+        }*/
+        return bitacora;
     }
 
     @GetMapping("/{id}")

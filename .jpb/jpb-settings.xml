@@ -3,4 +3,13 @@
   <component name="JpaLiquibaseChangesConfig">
     <exclude-change idName="diseño#fecha_diseño" tagName="addNotNullConstraint" />
   </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit name="Default">
+        <packages>
+          <package value="com.example.demo" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>

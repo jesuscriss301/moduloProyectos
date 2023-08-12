@@ -8,4 +8,8 @@ import java.util.List;
 public interface PresupuestoRepository extends JpaRepository<Presupuesto, Integer> {
     List<Presupuesto> findByIdProyecto_IdAndIdEstado_Id(Integer idProyecto, Integer idEstado);
 
+    List<Presupuesto> findByIdProyecto_IdOrderByIdDesc(Integer id);
+
+
+
 }

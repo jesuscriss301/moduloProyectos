@@ -9,7 +9,6 @@ import com.carboexco.moduloProyectos.repository.PresupuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,14 +31,14 @@ public class PresupuestoController {
 
     @GetMapping("/proyecto/{id}")
     public List<Presupuesto> getPresupuestoAll(@PathVariable int id) {
-        List<Presupuesto> presupuesto = presupuestoRepository.findAll();
-        List<Presupuesto> presupuestoproyecto = new ArrayList<Presupuesto>();
+        List<Presupuesto> presupuesto = presupuestoRepository.findByIdProyecto_IdOrderByIdDesc(id);
+        /*List<Presupuesto> presupuestoproyecto = new ArrayList<Presupuesto>();
         for (Presupuesto i : presupuesto) {
             if (i.getIdProyecto().getId()==id){
                 presupuestoproyecto.add(i);
             }
-        }
-        return presupuestoproyecto;
+        }*/
+        return presupuesto;
     }
 
     @GetMapping("/costototal/{Presupuesto}")
